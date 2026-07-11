@@ -1,7 +1,8 @@
 {
   "name": "香光淨宗學會電子書",
   "short_name": "香光淨宗學會電子書",
-  "start_url": "book.html",
+  "start_url": "index.html",
+  "scope": ".",
   "display": "standalone",
   "background_color": "#8DB73F",
   "theme_color": "#8DB73F",
