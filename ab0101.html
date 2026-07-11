@@ -242,58 +242,6 @@
   }
   .btn-ghost:hover{ background: rgba(43,42,37,0.05); }
 
-  /* ---------- Explainer card (this is the point of the demo) ---------- */
-  .explainer{
-    border-top: 1px dashed var(--line);
-    padding-top: 34px;
-  }
-  .explainer-eyebrow{
-    font-size:11px;
-    letter-spacing:0.3em;
-    color: var(--gold);
-    text-align:center;
-    margin-bottom:10px;
-  }
-  .explainer h2{
-    font-family:'Noto Serif TC', serif;
-    text-align:center;
-    font-size:20px;
-    color: var(--pine-deep);
-    margin-bottom: 26px;
-  }
-  .steps{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap:16px;
-  }
-  @media (max-width:620px){
-    .steps{ grid-template-columns: 1fr; }
-  }
-  .step{
-    background: rgba(255,255,255,0.45);
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding: 18px 16px;
-  }
-  .step-num{
-    font-family:'Noto Serif TC', serif;
-    font-size:12px;
-    color: var(--brick);
-    letter-spacing:0.1em;
-    margin-bottom:8px;
-  }
-  .step-title{
-    font-size:14px;
-    font-weight:500;
-    color: var(--ink);
-    margin-bottom:6px;
-  }
-  .step-body{
-    font-size:12.5px;
-    color: var(--ink-soft);
-    line-height:1.7;
-  }
-
   footer{
     text-align:center;
     margin-top: 50px;
@@ -309,14 +257,13 @@
 <div class="wrap">
 
   <header>
-    <div class="brand">法寶園地<span>ONLINE READING · 電子書自架示範</span></div>
+    <div class="brand">法寶園地<span>ONLINE READING · 香光淨宗學會電子書</span></div>
     <div class="install-tag">完整版・62 頁</div>
   </header>
 
   <div class="title-block">
-    <div class="eyebrow">示範　DEMO</div>
     <h1>佛說阿彌陀經</h1>
-    <div class="subtitle">全書 62 頁線上翻閱 · 不需要每年繳平台年費</div>
+    <div class="subtitle">全書 62 頁線上翻閱</div>
   </div>
 
   <div class="book-stage">
@@ -330,33 +277,10 @@
   <div class="hint">點左右箭頭、滑動，或按鍵盤方向鍵翻頁</div>
 
   <div class="actions">
-    <button class="btn btn-primary" id="installBtn">📲　加到主畫面（模擬效果說明）</button>
+    <button class="btn btn-primary" id="installBtn">📲　加到主畫面</button>
     <button class="btn btn-ghost" id="restartBtn">重新從封面開始</button>
   </div>
 
-  <div class="explainer">
-    <div class="explainer-eyebrow">這本做完了，接下來</div>
-    <h2>還剩兩步，就能正式取代 GOGOFINDER（放上自己的空間、加上 manifest.json）</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-title">放到自己的免費空間</div>
-        <div class="step-body">用 GitHub Pages 或 Netlify 存放這個網頁，網址掌握在自己手上，不會因為停止繳費就被下架，其他書也用同樣方式各做一頁。</div>
-      </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-title">加一個 manifest.json</div>
-        <div class="step-body">加上設定檔和圖示，手機瀏覽器就會出現「加入主畫面」，點開全螢幕開啟，體驗跟 APP 一樣，不用上架審核。</div>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-title">做一個總覽頁</div>
-        <div class="step-body">仿照 hguang.org 的電子書一覽表，做一個列表頁串連所有書，取代原本掛在 GOGOFINDER 上的入口。</div>
-      </div>
-    </div>
-  </div>
-
-  <footer>此頁面為示範用途 · 實際上線需搬到妳們自己的網域與空間</footer>
 </div>
 
 <script>
@@ -480,7 +404,7 @@ book.addEventListener('touchend', (e) => {
 });
 
 document.getElementById('installBtn').addEventListener('click', () => {
-  alert('在正式部署的網站上，這個按鈕會呼叫瀏覽器「加到主畫面」的功能。\n\niPhone：Safari 開啟網站 → 分享 → 加入主畫面\nAndroid：Chrome 開啟網站 → 選單 → 新增至主畫面\n\n之後桌面就會出現一個像 APP 一樣的圖示，點開全螢幕顯示，不需要上架 App Store / Google Play。');
+  alert('把這個網站加到手機主畫面，之後就能像 APP 一樣點開全螢幕閱讀：\n\niPhone：Safari 開啟網站 → 分享 → 加入主畫面\nAndroid：Chrome 開啟網站 → 選單 → 新增至主畫面');
 });
 
 render();
