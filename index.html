@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>香光淨宗學會電子書</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#8DB73F">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
+
+  :root{
+    --cream: #FAF7EE;
+    --cream-deep: #F1EBD9;
+    --ink: #2B2A25;
+    --ink-soft: #6b6355;
+    --green: #8DB73F;
+    --green-deep: #5f8a29;
+    --line: rgba(43,42,37,0.12);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ background: var(--cream); color: var(--ink); font-family:'Noto Sans TC', sans-serif; }
+
+  .wrap{ max-width: 880px; margin:0 auto; padding: 0 20px 80px; }
+
+  /* ---------------- Header banner ---------------- */
+  header.banner{
+    padding-top: 56px;
+    padding-bottom: 36px;
+    text-align:center;
+  }
+  .banner-img{
+    display:block;
+    width: 240px;
+    height: auto;
+    margin: 0 auto;
+  }
+  .subtitle{
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    color: var(--ink-soft);
+    margin-top: 10px;
+  }
+
+  /* ---------------- Intro / search note ---------------- */
+  .intro{
+    text-align:center;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height:1.8;
+    padding: 18px 10px 8px;
+    border-top: 1px solid var(--line);
+    margin-top: 18px;
+  }
+
+  /* ---------------- Category sections ---------------- */
+  .cat-group{ margin-top: 46px; }
+  .cat-group-title{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size: 22px;
+    color: var(--green-deep);
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom: 18px;
+  }
+  .cat-group-title .code{
+    font-size:13px;
+    font-weight:400;
+    color: var(--ink-soft);
+    letter-spacing:0.05em;
+  }
+
+  .subcat{ margin-bottom: 28px; }
+  .subcat-title{
+    font-family:'Noto Serif TC', serif;
+    font-weight:500;
+    font-size: 16px;
+    color: var(--ink);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 6px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .subcat-title .code{ font-size:12px; color:var(--ink-soft); font-weight:400; }
+
+  ul.book-list{ list-style:none; }
+  ul.book-list li{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap: 14px;
+    padding: 9px 4px;
+    font-size: 14px;
+    border-bottom: 1px dotted var(--line);
+  }
+  ul.book-list li .name{ color: var(--ink); flex:1; line-height:1.6; }
+  ul.book-list li .code{ font-size:11px; color: var(--ink-soft); white-space:nowrap; }
+  ul.book-list li a.read-link{
+    flex-shrink:0;
+    font-size:12px;
+    color:#fff;
+    background: var(--green);
+    padding: 4px 12px;
+    border-radius: 100px;
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  ul.book-list li a.read-link:hover{ background: var(--green-deep); }
+  ul.book-list li .pending{
+    flex-shrink:0;
+    font-size:12px;
+    color: var(--ink-soft);
+    border:1px solid var(--line);
+    padding: 4px 12px;
+    border-radius:100px;
+    white-space:nowrap;
+  }
+
+  /* ---------------- Featured section ---------------- */
+  .featured{
+    margin-top: 40px;
+    background: var(--cream-deep);
+    border-radius: 14px;
+    padding: 22px 22px;
+    display:flex;
+    align-items:center;
+    gap: 18px;
+  }
+  .featured .tag{
+    font-size:11px;
+    letter-spacing:0.15em;
+    color: var(--green-deep);
+    margin-bottom:4px;
+  }
+  .featured .fname{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size:18px;
+  }
+  .featured a.read-link{
+    margin-left:auto;
+    flex-shrink:0;
+    font-size:13px;
+    color:#fff;
+    background: var(--green);
+    padding: 8px 18px;
+    border-radius:100px;
+    text-decoration:none;
+  }
+
+  footer{
+    text-align:center;
+    margin-top: 60px;
+    padding-top: 22px;
+    border-top:1px solid var(--line);
+    font-size:11px;
+    color: var(--ink-soft);
+    letter-spacing:0.05em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="banner">
+    <img class="banner-img" src="assets/banner.png" alt="香光淨宗學會電子書">
+    <div class="subtitle">ONLINE READING · 電子書一覽表</div>
+  </header>
+
+  <div class="intro">
+    以下法寶均提供線上翻頁閱讀與下載，取代原本平台，網址由本會自行維護。<br>
+    尚未完成線上版的書目會標示「準備中」，陸續更新。
+  </div>
+
+  <div class="featured">
+    <div>
+      <div class="tag">精選 · 已上線</div>
+      <div class="fname">高僧阿呆魚</div>
+    </div>
+    <a class="read-link" href="book.html">線上閱讀</a>
+  </div>
+
+  <div class="cat-group">
+<div class="cat-group-title">淨土典籍 <span class="code">A</span></div>
+<div class="subcat">
+<div class="subcat-title">淨土合刊 <span class="code">Aa</span></div>
+<ul class="book-list">
+<li><span class="code">Aa01</span><span class="name">淨土五經讀本(淨空法師選定)</span><span class="pending">準備中</span></li>
+<li><span class="code">Aa02</span><span class="name">淨土五經一論</span><span class="pending">準備中</span></li>
+</ul>
+</div>
+<div class="subcat">
+<div class="subcat-title">阿彌陀經 <span class="code">Ab</span></div>
+<ul class="book-list">
+<li><span class="code">Ab0101</span><span class="name">佛說阿彌陀經</span><span class="pending">準備中</span></li>
+<li><span class="code">Ab0102</span><span class="name">佛說阿彌陀經摘注接蒙義蘊合刊(李炳南老居士講述)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ab0103</span><span class="name">佛說阿彌陀經通贊疏(窺基撰)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ab0104</span><span class="name">彌陀圓中鈔(沙門傳燈鈔)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ab0105</span><span class="name">阿彌陀經疏鈔演義(淨空法師)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ab0201</span><span class="name">彌陀要解便蒙鈔(蕅益大師要解)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ab0202</span><span class="name">佛說阿彌陀經要解(藕益大師)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ab0203</span><span class="name">佛說阿彌陀經要解講記</span><span class="pending">準備中</span></li>
+<li><span class="code">Ab0204</span><span class="name">佛說阿彌陀經要解講義(藕益大師要解)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ab0205</span><span class="name">彌陀要解研習報告(淨空老法師編述)</span><span class="pending">準備中</span></li>
+</ul>
+</div>
+<div class="subcat">
+<div class="subcat-title">無量壽經 <span class="code">Ac</span></div>
+<ul class="book-list">
+<li><span class="code">Ac01</span><span class="name">佛說大乘無量壽莊嚴清淨平等覺經會集本(夏蓮居)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac02</span><span class="name">佛說大乘無量壽莊嚴清淨平等覺經會集本(雪盧老人注)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac03</span><span class="name">佛說大乘無量壽莊嚴清淨平等覺經卷首(淨空法師述)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac04</span><span class="name">佛說大乘無量壽莊嚴清淨平等覺經卷首(淨空法師述)更新版</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac04b</span><span class="name">佛說大乘無量壽莊嚴清淨平等覺經科會(淨空老法師著)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac05</span><span class="name">淨土大經科註參考資料【上冊】(上勝下妙法師)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac06</span><span class="name">淨土大經科註參考資料【下冊】(上勝下妙法師)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac07</span><span class="name">佛說大乘無量壽莊嚴清淨平等覺經科註【上冊】(淨空法師科判‧黃念祖老居士註解)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac08</span><span class="name">佛說大乘無量壽莊嚴清淨平等覺經科註【下冊】(淨空法師科判‧黃念祖老居士註解)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac09</span><span class="name">漢譯無量壽經會譯對照修訂版(林祺安編)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac10</span><span class="name">無量壽經義疏‧佛說阿彌陀經義記(釋吉藏撰)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac11</span><span class="name">大乘無量壽經菁華(淨空老法師講述)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac12</span><span class="name">佛說大乘無量壽莊嚴清淨平等覺經解(黃念祖居士著)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac13</span><span class="name">佛說無量壽經義疏(慧遠撰疏)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac14</span><span class="name">大乘無量壽莊嚴清淨平等覺經親聞記</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac15</span><span class="name">無量壽經起信論(彭際清居士述)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac16</span><span class="name">大乘無量壽經簡註易解</span><span class="pending">準備中</span></li>
+<li><span class="code">Ac17</span><span class="name">阿彌陀佛48願易解/極樂世界29種莊嚴合刊(淨空老法師述)</span><span class="pending">準備中</span></li>
+</ul>
+</div>
+<div class="subcat">
+<div class="subcat-title">觀無量壽經 <span class="code">Ad</span></div>
+<ul class="book-list">
+<li><span class="code">Ad01</span><span class="name">佛說觀無量壽佛經(彊良耶舍譯)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ad02</span><span class="name">觀經四帖疏(善導大師)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ad03</span><span class="name">佛說觀無量壽佛經直指疏(沙門灌頂續法述疏)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ad04</span><span class="name">觀無量壽佛經疏精華</span><span class="pending">準備中</span></li>
+<li><span class="code">Ad05</span><span class="name">佛說觀無量壽佛經義疏(隋‧慧遠撰)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ad06</span><span class="name">佛說觀無量壽佛經義疏正觀記(戒度法師記)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ad07</span><span class="name">佛說觀無量壽佛經疏</span><span class="pending">準備中</span></li>
+<li><span class="code">Ad08</span><span class="name">佛說觀無量壽佛經疏鈔演義(諦閑老法師)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ad09</span><span class="name">觀經智者疏妙宗鈔(智者大師疏‧知禮法師鈔)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ad10</span><span class="name">觀無量壽佛經疏上品上生章講記/大勢至菩薩念佛圓通章親聞記合刊(淨空法師講述)</span><span class="pending">準備中</span></li>
+</ul>
+</div>
+<div class="subcat">
+<div class="subcat-title">普賢行願品 <span class="code">Ae</span></div>
+<ul class="book-list">
+<li><span class="code">Ae0201</span><span class="name">《四十華嚴》第一冊卷1-卷10(三藏法師譯)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ae0202</span><span class="name">《四十華嚴》第二冊卷11-卷20(三藏法師譯)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ae0203</span><span class="name">《四十華嚴》第三冊卷21-卷30(三藏法師譯)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ae0204</span><span class="name">《四十華嚴》第四冊卷31-卷40(三藏法師)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ae0301</span><span class="name">普賢行願品別行疏鈔(清涼國師疏‧圭夆大師鈔)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ae0302</span><span class="name">普賢行願品輯要疏(釋諦閑法師述)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ae0303</span><span class="name">普賢大士行願的啟示(淨空老法師述)</span><span class="pending">準備中</span></li>
+</ul>
+</div>
+<div class="subcat">
+<div class="subcat-title">大勢至菩薩念佛圓通章 <span class="code">Af</span></div>
+<ul class="book-list">
+<li><span class="code">Af01</span><span class="name">大勢至菩薩念佛圓通章研習報告講義(淨空老和尚編述)</span><span class="pending">準備中</span></li>
+<li><span class="code">Af02</span><span class="name">大勢至菩薩念佛圓通章疏鈔(續法法師著)</span><span class="pending">準備中</span></li>
+</ul>
+</div>
+<div class="subcat">
+<div class="subcat-title">往生論 <span class="code">Ag</span></div>
+<ul class="book-list">
+<li><span class="code">Ag01</span><span class="name">往生論輯注(曇鸞大師)</span><span class="pending">準備中</span></li>
+</ul>
+</div>
+</div>
+<div class="cat-group">
+<div class="cat-group-title">其他經論 <span class="code">B</span></div>
+<div class="subcat">
+<div class="subcat-title">華嚴經 <span class="code">Ba</span></div>
+<ul class="book-list">
+<li><span class="code">Ba0101</span><span class="name">八十華嚴經第一冊(卷一~十)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ba0102</span><span class="name">八十華嚴經第二冊(卷十一~廿)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ba0103</span><span class="name">八十華嚴經第三冊(卷廿一~卅)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ba0104</span><span class="name">八十華嚴經第四冊(卷卅一~四十)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ba0105</span><span class="name">八十華嚴經第五冊(卷四一~五十)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ba0106</span><span class="name">八十華嚴經第六冊(卷五一~六十)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ba0107</span><span class="name">八十華嚴經第七冊(卷六一~七十)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ba0108</span><span class="name">八十華嚴經第八冊(卷七一~八十)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ba0201</span><span class="name">華嚴經淨行品-寒山詩合刊</span><span class="pending">準備中</span></li>
+<li><span class="code">Ba0202</span><span class="name">脩華嚴奧旨妄盡還源觀(賢首國師)</span><span class="pending">準備中</span></li>
+<li><span class="code">Ba0203</span><span class="name">華嚴念佛三昧論講記</span><span class="pending">準備中</span></li>
+</ul>
+</div>
+<div class="subcat">
+<div class="subcat-title">楞嚴經 <span class="code">Bb</span></div>
+<ul class="book-list">
+<li><span class="code">Bb01</span><span class="name">大佛頂首楞嚴經清淨明誨章講記(淨空法師)</span><span class="pending">準備中</span></li>
+<li><span class="code">Bb02</span><span class="name">大佛頂首楞嚴經講義五十陰魔章(圓瑛法師)</span><span class="pending">準備中</span></li>
+</ul>
+</div>
+<div class="subcat">
+<div class="subcat-title">金剛經 <span class="code">Bc</span></div>
+<ul class="book-list">
+<li><span class="code">Bc01</span><span class="name">金剛經講義節要(淨空法師節錄)</span><span class="pending">準備中</span></li>
+<li><span class="code">Bc02</span><span class="name">金剛般若研習報告(淨空老法師講述)</span><span class="pending">準備中</span></li>
+<li><span class="code">Bc03</span><span class="name">從金剛經談到無量壽經(黃念祖居士)</span><span class="pending">準備中</span></li>
+<li><span class="code">Bc04</span><span class="name">金剛般若波羅蜜經(鳩摩羅什譯‧江味農校)</span><span class="pending">準備中</span></li>
+</ul>
+</div>
+<div class="subcat">
+<div class="subcat-title">心經 <span class="code">Bd</span></div>
+<ul class="book-list">
+<li><span class="code">Bd01</span><span class="name">般若波羅蜜多心經詮注(周止菴居士)</span><span class="pending">準備中</span></li>
+<li><span class="code">Bd02</span><span class="name">心經講記(淨空法師講述)</span><span class="pending">準備中</span></li>
+</ul>
+</div>
+<div class="subcat">
+<div class="subcat-title">地藏本願經 <span class="code">Be</span></div>
+<ul class="book-list">
+<li><span class="code">Be01</span><span class="name">地藏菩薩本願經(三藏沙門實叉難陀譯)</span><span class="pending">準備中</span></li>
+<li><span class="code">Be02</span><span class="name">地藏菩薩本願經講記-上冊(淨空法師講述)</span><span class="pending">準備中</span></li>
+<li><span class="code">Be03</span><span class="name">地藏菩薩本願經講記-下冊(淨空法師講述)</span><span class="pending">準備中</span></li>
+<li><span class="code">Be04</span><span class="name">地藏本願經講記(聖一老法師述)</span><span class="pending">準備中</span></li>
+<li><span class="code">Be05</span><span class="name">地藏經講記(淨空法師講述)</span><span class="pending">準備中</span></li>
+<li><span class="code">Be06</span><span class="name">地藏經的啟示‧超度的理論和事實合刊(淨空老法師)</span><span class="pending">準備中</span></li>
+</ul>
+</div>
+<div class="subcat">
+<div class="subcat-title">菩薩戒 <span class="code">Bf</span></div>
+<ul class="book-list">
+<li><span class="code">Bf01</span><span class="name">佛說梵網經菩薩戒本解(李圓義居士彙編)</span><span class="pending">準備中</span></li>
+<li><span class="code">Bf02</span><span class="name">梵網經菩薩戒本(鳩摩羅什譯)</span><span class="pending">準備中</span></li>
+<li><span class="code">Bf03</span><span class="name">菩薩戒本經出地持戒品中(曇無懺法師譯)</span><span class="pending">準備中</span></li>
+</ul>
+</div>
+</div>
+
+  <footer>香光淨宗學會 · 法寶園地電子書 &nbsp;|&nbsp; 本頁面自行架設，取代原付費平台</footer>
+</div>
+</body>
+</html>
