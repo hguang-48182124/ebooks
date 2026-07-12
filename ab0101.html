@@ -383,7 +383,7 @@ function prev(){ if(current > 0){ current--; render(); } }
 
 nextBtn.addEventListener('click', next);
 prevBtn.addEventListener('click', prev);
-render(); });
+render();
 
 document.addEventListener('keydown', (e) => {
   if(e.key === 'ArrowRight') next();
