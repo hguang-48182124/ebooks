@@ -122,7 +122,7 @@
   .book{
     position:relative;
     width: min(78vw, 380px);
-    aspect-ratio: 408 / 596.4;
+    aspect-ratio: 297.638 / 419.528;
     border-radius: 3px;
     box-shadow:
       0 2px 4px rgba(43,42,37,0.15),
@@ -279,12 +279,6 @@
   <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">62</span> 頁</div>
   <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
   <div class="hint">點左右箭頭、滑動，或按鍵盤方向鍵翻頁</div>
-
-  <div class="actions">
-    <button class="btn btn-primary" id="installBtn">📲　加到主畫面</button>
-    <button class="btn btn-ghost" id="restartBtn">重新從封面開始</button>
-  </div>
-
 </div>
 
 <script>
@@ -389,7 +383,7 @@ function prev(){ if(current > 0){ current--; render(); } }
 
 nextBtn.addEventListener('click', next);
 prevBtn.addEventListener('click', prev);
-document.getElementById('restartBtn').addEventListener('click', () => { current = 0; render(); });
+render(); });
 
 document.addEventListener('keydown', (e) => {
   if(e.key === 'ArrowRight') next();
@@ -405,10 +399,6 @@ book.addEventListener('touchend', (e) => {
   if(dx < -40) next();
   if(dx > 40) prev();
   touchStartX = null;
-});
-
-document.getElementById('installBtn').addEventListener('click', () => {
-  alert('把這個網站加到手機主畫面，之後就能像 APP 一樣點開全螢幕閱讀：\n\niPhone：Safari 開啟網站 → 分享 → 加入主畫面\nAndroid：Chrome 開啟網站 → 選單 → 新增至主畫面');
 });
 
 render();
