@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>淨土五經一論 · 線上電子書</title>
+<style>
+  :root{
+    --paper: #f6efe0;
+    --paper-deep: #ece0c8;
+    --ink: #2c2418;
+    --ink-soft: #6b5f4a;
+    --green: #2f4b3c;
+    --green-deep: #1f3329;
+    --brick: #a3462f;
+    --brick-soft: #c46a4f;
+    --line: #d9cba8;
+    --shadow: rgba(43, 34, 20, 0.25);
+  }
+  *{ box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0; height:100%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Noto Serif TC", "PMingLiU", "Songti TC", serif;
+    overflow: hidden;
+  }
+  #app{
+    display:flex; flex-direction:column; align-items:center;
+    height:100%; width:100%;
+    padding: 10px 12px 14px;
+  }
+  header{
+    text-align:center;
+    width:100%;
+    max-width: 640px;
+    flex-shrink:0;
+  }
+  header a.home-link{
+    color: var(--brick);
+    text-decoration:none;
+    font-size: 13px;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--brick-soft);
+    padding-bottom: 1px;
+  }
+  header a.home-link:active{ opacity:0.6; }
+  h1{
+    margin: 6px 0 2px;
+    font-size: clamp(18px, 5vw, 24px);
+    font-weight: 700;
+    color: var(--green-deep);
+    letter-spacing: 2px;
+  }
+  .subtitle{
+    margin:0 0 8px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 1.5px;
+  }
+
+  #book-stage{
+    position: relative;
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 640px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height: 0;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .page-frame{
+    position: relative;
+    height: 100%;
+    max-height: 100%;
+    aspect-ratio: 0.707;
+    max-width: 100%;
+    background: var(--green);
+    border-radius: 4px;
+    box-shadow: 0 10px 30px var(--shadow);
+    overflow: hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  #pageImg{
+    width:100%;
+    height:100%;
+    object-fit: contain;
+    display:block;
+    background: var(--green);
+    opacity: 1;
+    transition: opacity 0.22s ease;
+  }
+  #pageImg.loading{ opacity: 0.35; }
+
+  .nav-btn{
+    position:absolute;
+    top:0; bottom:0;
+    width: 34%;
+    background: transparent;
+    border:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    color: rgba(246,239,224,0.0);
+    font-size: 0;
+    padding:0;
+  }
+  .nav-btn:active{ background: rgba(0,0,0,0.06); }
+  #prevBtn{ left:0; justify-content:flex-start; }
+  #nextBtn{ right:0; justify-content:flex-end; }
+  .nav-arrow{
+    width: 34px; height:34px;
+    margin: 0 6px;
+    border-radius:50%;
+    background: rgba(44,36,24,0.28);
+    color:#f6efe0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px;
+    opacity:0.85;
+  }
+
+  footer{
+    flex-shrink:0;
+    width:100%;
+    max-width: 640px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    padding-top: 10px;
+  }
+  .page-indicator{
+    font-size: 13px;
+    color: var(--ink-soft);
+    letter-spacing: 0.5px;
+  }
+  .jump-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .jump-row input{
+    width: 56px;
+    text-align:center;
+    padding: 5px 4px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--paper-deep);
+    color: var(--ink);
+    font-size: 14px;
+  }
+  .jump-row button{
+    padding: 5px 12px;
+    border: 1px solid var(--green);
+    background: var(--green);
+    color: var(--paper);
+    border-radius: 4px;
+    font-size: 13px;
+    cursor:pointer;
+  }
+  .jump-row button:active{ background: var(--green-deep); }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <a class="home-link" href="index.html">法寶園地</a>
+    <h1>淨土五經一論</h1>
+    <div class="subtitle">ONLINE READING · 電子書自架</div>
+  </header>
+
+  <div id="book-stage">
+    <div class="page-frame">
+      <img id="pageImg" src="" alt="page">
+    </div>
+    <button id="prevBtn" class="nav-btn" aria-label="上一頁"><span class="nav-arrow">‹</span></button>
+    <button id="nextBtn" class="nav-btn" aria-label="下一頁"><span class="nav-arrow">›</span></button>
+  </div>
+
+  <footer>
+    <div class="page-indicator">第 <span id="curPage">1</span> / <span id="totalPage">220</span> 頁</div>
+    <div class="jump-row">
+      <input id="jumpInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="頁碼">
+      <button id="jumpBtn">跳頁</button>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const IMG_DIR = "aa02-images/";
+  const TOTAL_PAGES = 220;
+  const PREV_VOL = null;
+  const NEXT_VOL = null;
+
+  let current = 1;
+  let isAnimating = false;
+
+  const img = document.getElementById('pageImg');
+  const curPageEl = document.getElementById('curPage');
+  const totalPageEl = document.getElementById('totalPage');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const jumpInput = document.getElementById('jumpInput');
+  const jumpBtn = document.getElementById('jumpBtn');
+  const stage = document.getElementById('book-stage');
+
+  totalPageEl.textContent = TOTAL_PAGES;
+
+  function pad4(n){
+    return String(n).padStart(4, '0');
+  }
+
+  function renderPage(n, animate){
+    if (n < 1 || n > TOTAL_PAGES) return;
+    current = n;
+    if (animate){
+      isAnimating = true;
+      img.classList.add('loading');
+    }
+    const src = IMG_DIR + pad4(n) + '.jpg';
+    const preload = new Image();
+    preload.onload = function(){
+      img.src = src;
+      img.classList.remove('loading');
+      isAnimating = false;
+    };
+    preload.onerror = function(){
+      img.classList.remove('loading');
+      isAnimating = false;
+    };
+    preload.src = src;
+    curPageEl.textContent = n;
+    jumpInput.value = '';
+  }
+
+  function next(){
+    if (isAnimating) return;
+    if (current < TOTAL_PAGES){
+      renderPage(current + 1, true);
+    } else if (NEXT_VOL){
+      window.location.href = NEXT_VOL;
+    }
+  }
+  function prev(){
+    if (isAnimating) return;
+    if (current > 1){
+      renderPage(current - 1, true);
+    } else if (PREV_VOL){
+      window.location.href = PREV_VOL;
+    }
+  }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight') next();
+    if (e.key === 'ArrowLeft') prev();
+  });
+
+  jumpBtn.addEventListener('click', function(){
+    const n = parseInt(jumpInput.value, 10);
+    if (!isNaN(n)) renderPage(n, true);
+  });
+  jumpInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') jumpBtn.click();
+  });
+
+  // Touch handling: intercept horizontal swipe, let vertical scroll pass through
+  let touchStartX = 0, touchStartY = 0, touchLocked = null;
+  stage.addEventListener('touchstart', function(e){
+    const t = e.touches[0];
+    touchStartX = t.clientX;
+    touchStartY = t.clientY;
+    touchLocked = null;
+  }, {passive:true});
+
+  stage.addEventListener('touchmove', function(e){
+    const t = e.touches[0];
+    const dx = t.clientX - touchStartX;
+    const dy = t.clientY - touchStartY;
+    if (touchLocked === null){
+      touchLocked = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    }
+    if (touchLocked === 'x'){
+      e.preventDefault();
+    }
+  }, {passive:false});
+
+  stage.addEventListener('touchend', function(e){
+    if (touchLocked !== 'x') return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStartX;
+    if (Math.abs(dx) > 40){
+      if (dx < 0) next(); else prev();
+    }
+  }, {passive:true});
+
+  renderPage(1, false);
+})();
+</script>
+</body>
+</html>
