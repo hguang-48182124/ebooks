@@ -178,6 +178,39 @@
     color: var(--ink-soft);
     letter-spacing:0.05em;
   }
+  /* ---------------- Search box ---------------- */
+  .search-box{
+    margin: 18px 0 8px;
+    position: relative;
+  }
+  .search-box input{
+    width: 100%;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    padding: 12px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+  }
+  .search-box input:focus{
+    outline: none;
+    border-color: var(--green);
+  }
+  .search-hint{
+    text-align:center;
+    font-size:12px;
+    color: var(--ink-soft);
+    margin: 6px 0 0;
+  }
+  .no-results{
+    text-align:center;
+    font-size:13px;
+    color: var(--ink-soft);
+    padding: 30px 0;
+    display:none;
+  }
+  .hidden{ display:none !important; }
 </style>
 </head>
 <body>
@@ -192,6 +225,11 @@
     以下法寶均提供線上翻頁閱讀與下載<br>
     未完成線上版之書目標示「準備中」陸續更新
   </div>
+
+  <div class="search-box">
+    <input type="text" id="bookSearch" placeholder="輸入書名或書碼搜尋…" autocomplete="off">
+  </div>
+  <div class="no-results" id="noResults">找不到符合的書籍</div>
 
   <div class="featured">
     <div>
@@ -813,5 +851,57 @@
 
   <footer>香光淨宗學會 · 法寶園地電子書 &nbsp;|&nbsp; 本頁面自行架設，取代原付費平台</footer>
 </div>
+<script>
+(function(){
+  const input = document.getElementById('bookSearch');
+  const noResults = document.getElementById('noResults');
+  const catGroups = Array.from(document.querySelectorAll('.cat-group'));
+
+  function norm(s){ return (s || '').toLowerCase().trim(); }
+
+  function filter(){
+    const q = norm(input.value);
+    let anyVisible = false;
+
+    catGroups.forEach(group => {
+      let groupHasMatch = false;
+
+      // subcat 區塊（例如「阿彌陀經 Ab」）
+      group.querySelectorAll('.subcat').forEach(subcat => {
+        let subcatHasMatch = false;
+
+        // group-title 下面各自的書單（例如 Ab01 底下那組）
+        const uls = subcat.querySelectorAll('ul.book-list');
+        uls.forEach(ul => {
+          let ulHasMatch = false;
+          ul.querySelectorAll('li').forEach(li => {
+            const code = norm(li.querySelector('.code') && li.querySelector('.code').textContent);
+            const name = norm(li.querySelector('.name') && li.querySelector('.name').textContent);
+            const match = !q || code.includes(q) || name.includes(q);
+            li.classList.toggle('hidden', !match);
+            if (match) ulHasMatch = true;
+          });
+          // 如果這個 ul 前面緊跟著一個 group-title，一併隱藏/顯示
+          const prev = ul.previousElementSibling;
+          if (prev && prev.classList.contains('group-title')) {
+            prev.classList.toggle('hidden', !ulHasMatch);
+          }
+          if (ulHasMatch) subcatHasMatch = true;
+        });
+
+        subcat.classList.toggle('hidden', !subcatHasMatch);
+        if (subcatHasMatch) groupHasMatch = true;
+      });
+
+      group.classList.toggle('hidden', !groupHasMatch);
+      if (groupHasMatch) anyVisible = true;
+    });
+
+    noResults.style.display = (q && !anyVisible) ? 'block' : 'none';
+  }
+
+  input.addEventListener('input', filter);
+})();
+</script>
 </body>
 </html>
