@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>佛說阿彌陀經要解講義(藕益大師要解)</title>
+<style>
+  :root{
+    --paper: #f3ecdd;
+    --paper-deep: #ece2cc;
+    --ink: #3a2f22;
+    --green: #234d33;
+    --green-soft: #33684a;
+    --brick: #a6462f;
+    --brick-soft: #c25b40;
+    --frame-bg: #ffffff;
+  }
+  *{ box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Noto Serif TC", "PMingLiU", "Songti TC", serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding: 18px 12px 28px;
+  }
+  header{
+    width:100%;
+    max-width:640px;
+    text-align:center;
+    margin-bottom: 14px;
+  }
+  header .crumb{
+    font-size: 13px;
+  }
+  header .crumb a{
+    color: var(--green);
+    text-decoration: none;
+    border-bottom: 1px solid var(--green-soft);
+  }
+  header h1{
+    margin: 8px 0 2px;
+    font-size: 22px;
+    color: var(--green);
+    letter-spacing: 1px;
+    line-height:1.4;
+  }
+  header .subtitle{
+    margin:0;
+    font-size: 12.5px;
+    letter-spacing: 2px;
+    color: var(--brick);
+    text-transform: uppercase;
+  }
+
+  .book-stage{
+    width:100%;
+    max-width: 520px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .page-frame{
+    position:relative;
+    width:100%;
+    aspect-ratio: 0.7078;
+    background: var(--frame-bg);
+    border-radius: 4px;
+    box-shadow: 0 10px 28px rgba(58,47,34,0.22), 0 2px 6px rgba(58,47,34,0.12);
+    overflow:hidden;
+  }
+  .page-frame img{
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    object-fit: contain;
+    opacity:0;
+    transition: opacity 0.28s ease;
+    pointer-events:none;
+  }
+  .page-frame img.shown{
+    opacity:1;
+  }
+  .page-frame .loading{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 13px;
+    color: var(--ink);
+    opacity:0.55;
+    letter-spacing:1px;
+  }
+  .page-frame .loading.hidden{ display:none; }
+
+  .tap-zone{
+    position:absolute;
+    top:0; bottom:0;
+    width:32%;
+  }
+  .tap-zone.left{ left:0; }
+  .tap-zone.right{ right:0; }
+
+  .nav-row{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .nav-btn{
+    flex: 0 0 auto;
+    border:none;
+    background: var(--green);
+    color: #fdf8ee;
+    font-size: 14px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    cursor:pointer;
+  }
+  .nav-btn:disabled{
+    background:#b9b2a2;
+    cursor:default;
+  }
+  .nav-btn:active:not(:disabled){
+    background: var(--green-soft);
+  }
+
+  .page-indicator{
+    flex:1;
+    text-align:center;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .page-indicator #curPage{
+    font-weight:bold;
+    color: var(--brick);
+  }
+
+  .jump-row{
+    margin-top: 12px;
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .jump-row input{
+    width: 64px;
+    text-align:center;
+    font-size: 14px;
+    padding: 6px 4px;
+    border: 1px solid var(--green-soft);
+    border-radius: 6px;
+    background: #fffdf7;
+    color: var(--ink);
+  }
+  .jump-row button{
+    border:none;
+    background: var(--brick);
+    color:#fffdf7;
+    font-size: 13px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    cursor:pointer;
+  }
+  .jump-row button:active{
+    background: var(--brick-soft);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="crumb"><a href="index.html">法寶園地</a></div>
+  <h1>佛說阿彌陀經要解講義(藕益大師要解)</h1>
+  <p class="subtitle">ONLINE READING · 電子書自架</p>
+</header>
+
+<div class="book-stage" id="bookStage">
+  <div class="page-frame" id="pageFrame">
+    <div class="loading" id="loadingText">頁面載入中…</div>
+    <img id="imgA" alt="page">
+    <img id="imgB" alt="page">
+    <div class="tap-zone left" id="tapLeft"></div>
+    <div class="tap-zone right" id="tapRight"></div>
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-btn" id="prevBtn">◀ 上一頁</button>
+    <div class="page-indicator">第 <span id="curPage">1</span> 頁 / 共 <span id="totalPage">442</span> 頁</div>
+    <button class="nav-btn" id="nextBtn">下一頁 ▶</button>
+  </div>
+
+  <div class="jump-row">
+    <span>跳到第</span>
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput">
+    <span>頁</span>
+    <button id="jumpBtn">跳頁</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var IMG_DIR = "ab0204-images/";
+  var TOTAL = 442;
+
+  var cur = 1;
+  var isAnimating = false;
+  var imgs = [document.getElementById('imgA'), document.getElementById('imgB')];
+  var activeIdx = 0;
+  var loadingEl = document.getElementById('loadingText');
+  var frameEl = document.getElementById('pageFrame');
+  var curPageEl = document.getElementById('curPage');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var preloadCache = {};
+
+  function pad4(n){
+    var s = '' + n;
+    while (s.length < 4) s = '0' + s;
+    return s;
+  }
+  function srcFor(n){
+    return IMG_DIR + pad4(n) + '.jpg';
+  }
+  function preload(n){
+    if (n < 1 || n > TOTAL || preloadCache[n]) return;
+    var im = new Image();
+    im.src = srcFor(n);
+    preloadCache[n] = im;
+  }
+
+  function render(n, animate){
+    var showImg = imgs[activeIdx];
+    var hideImg = imgs[1 - activeIdx];
+    var next = 1 - activeIdx;
+
+    var loaded = false;
+    function onReady(){
+      if (loaded) return;
+      loaded = true;
+      loadingEl.classList.add('hidden');
+      imgs[next].classList.add('shown');
+      imgs[1-next].classList.remove('shown');
+      activeIdx = next;
+      isAnimating = false;
+    }
+
+    loadingEl.classList.remove('hidden');
+    var img = imgs[next];
+    img.onload = onReady;
+    img.src = srcFor(n);
+    if (img.complete && img.naturalWidth > 0) onReady();
+
+    curPageEl.textContent = n;
+    prevBtn.disabled = (n <= 1);
+    nextBtn.disabled = (n >= TOTAL);
+
+    preload(n + 1);
+    preload(n - 1);
+  }
+
+  function goTo(n){
+    if (isAnimating) return;
+    if (n < 1 || n > TOTAL || n === cur) return;
+    isAnimating = true;
+    cur = n;
+    render(n, true);
+  }
+
+  prevBtn.addEventListener('click', function(){ goTo(cur - 1); });
+  nextBtn.addEventListener('click', function(){ goTo(cur + 1); });
+  document.getElementById('tapLeft').addEventListener('click', function(){ goTo(cur - 1); });
+  document.getElementById('tapRight').addEventListener('click', function(){ goTo(cur + 1); });
+
+  document.getElementById('jumpBtn').addEventListener('click', doJump);
+  document.getElementById('jumpInput').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') doJump();
+  });
+  function doJump(){
+    var v = parseInt(document.getElementById('jumpInput').value, 10);
+    if (!isNaN(v)) goTo(v);
+  }
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowLeft') goTo(cur - 1);
+    if (e.key === 'ArrowRight') goTo(cur + 1);
+  });
+
+  // Touch handling: intercept horizontal swipes so the browser doesn't
+  // fight the page-turn gesture (prevents the shaking/jank issue).
+  var touchStartX = null, touchStartY = null, touchLocked = null;
+  var stage = document.getElementById('bookStage');
+  stage.addEventListener('touchstart', function(e){
+    if (e.touches.length !== 1) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchLocked = null;
+  }, {passive:true});
+
+  stage.addEventListener('touchmove', function(e){
+    if (touchStartX === null) return;
+    var dx = e.touches[0].clientX - touchStartX;
+    var dy = e.touches[0].clientY - touchStartY;
+    if (touchLocked === null) {
+      touchLocked = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+    }
+    if (touchLocked === 'h') {
+      e.preventDefault();
+    }
+  }, {passive:false});
+
+  stage.addEventListener('touchend', function(e){
+    if (touchStartX === null || touchLocked !== 'h') {
+      touchStartX = null;
+      return;
+    }
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 40) {
+      if (dx < 0) goTo(cur + 1);
+      else goTo(cur - 1);
+    }
+    touchStartX = null;
+  });
+
+  // initial render
+  render(cur, false);
+})();
+</script>
+
+</body>
+</html>
