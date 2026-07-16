@@ -3,342 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>彌陀要解研習報告(淨空老法師編述)</title>
+<title>彌陀要解研習報告(淨空老法師編述) · 線上電子書</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
   :root{
-    --paper: #f3ecdd;
-    --paper-deep: #ece2cc;
-    --ink: #3a2f22;
-    --green: #234d33;
-    --green-soft: #33684a;
-    --brick: #a6462f;
-    --brick-soft: #c25b40;
-    --frame-bg: #ffffff;
+    --paper: #EDE7D6; --paper-deep: #E2DAC3; --ink: #2B2A25; --ink-soft: #5C5A4E;
+    --pine: #33473F; --pine-deep: #22322C; --brick: #A85338; --gold: #B8925A;
+    --line: rgba(43,42,37,0.12);
   }
-  *{ box-sizing: border-box; }
-  html,body{
-    margin:0; padding:0;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: "Noto Serif TC", "PMingLiU", "Songti TC", serif;
-    -webkit-tap-highlight-color: transparent;
-  }
-  body{
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding: 18px 12px 28px;
-  }
-  header{
-    width:100%;
-    max-width:640px;
-    text-align:center;
-    margin-bottom: 14px;
-  }
-  header .crumb{
-    font-size: 13px;
-  }
-  header .crumb a{
-    color: var(--green);
-    text-decoration: none;
-    border-bottom: 1px solid var(--green-soft);
-  }
-  header h1{
-    margin: 8px 0 2px;
-    font-size: 22px;
-    color: var(--green);
-    letter-spacing: 1px;
-    line-height:1.4;
-  }
-  header .subtitle{
-    margin:0;
-    font-size: 12.5px;
-    letter-spacing: 2px;
-    color: var(--brick);
-    text-transform: uppercase;
-  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; background: var(--paper); font-family: 'Noto Sans TC', sans-serif; color: var(--ink); overflow-x:hidden; }
+  body{ background-image: radial-gradient(circle at 15% 10%, rgba(184,146,90,0.10), transparent 40%), radial-gradient(circle at 85% 90%, rgba(51,71,63,0.08), transparent 45%); }
+  .wrap{ max-width: 880px; margin: 0 auto; padding: 20px 16px 40px; min-height:100vh; display:flex; flex-direction:column; }
+  header{ display:flex; align-items:baseline; justify-content:space-between; padding-bottom:14px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+  .brand{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: 18px; letter-spacing: 0.04em; color: var(--pine-deep); }
+  .brand span{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:300; font-size:10px; letter-spacing:0.2em; color: var(--ink-soft); margin-top:3px; }
+  .title-block{ text-align:center; margin-bottom: 14px; }
+  h1{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: clamp(22px, 5.5vw, 34px); color: var(--pine-deep); line-height:1.3; }
+  .subtitle{ margin-top:6px; font-size:12px; color: var(--ink-soft); letter-spacing:0.03em; }
 
-  .book-stage{
-    width:100%;
-    max-width: 520px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    touch-action: pan-y;
-    user-select: none;
-    -webkit-user-select: none;
-  }
+  /* ---- fast page navigation bar (replaces volume-nav; jump straight to a page) ---- */
+  .jump-bar{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .jump-bar input{ width:64px; text-align:center; font-size:14px; padding:7px 6px; border-radius:6px; border:1px solid var(--line); background:#fff; }
+  .jump-bar button{ font-size:13px; padding:7px 14px; border-radius:6px; border:1px solid var(--pine); background:transparent; color:var(--pine); cursor:pointer; }
+  .jump-bar button:hover{ background: rgba(51,71,63,0.08); }
+  .jump-bar .sep{ font-size:12px; color:var(--ink-soft); }
 
-  .page-frame{
-    position:relative;
-    width:100%;
-    aspect-ratio: 0.7078;
-    background: var(--frame-bg);
-    border-radius: 4px;
-    box-shadow: 0 10px 28px rgba(58,47,34,0.22), 0 2px 6px rgba(58,47,34,0.12);
-    overflow:hidden;
-  }
-  .page-frame img{
-    position:absolute;
-    top:0; left:0;
-    width:100%; height:100%;
-    object-fit: contain;
-    opacity:0;
-    transition: opacity 0.28s ease;
-    pointer-events:none;
-  }
-  .page-frame img.shown{
-    opacity:1;
-  }
-  .page-frame .loading{
-    position:absolute;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size: 13px;
-    color: var(--ink);
-    opacity:0.55;
-    letter-spacing:1px;
-  }
-  .page-frame .loading.hidden{ display:none; }
-
-  .tap-zone{
-    position:absolute;
-    top:0; bottom:0;
-    width:32%;
-  }
-  .tap-zone.left{ left:0; }
-  .tap-zone.right{ right:0; }
-
-  .nav-row{
-    width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap: 10px;
-    margin-top: 12px;
-  }
-  .nav-btn{
-    flex: 0 0 auto;
-    border:none;
-    background: var(--green);
-    color: #fdf8ee;
-    font-size: 14px;
-    padding: 9px 16px;
-    border-radius: 999px;
-    cursor:pointer;
-  }
-  .nav-btn:disabled{
-    background:#b9b2a2;
-    cursor:default;
-  }
-  .nav-btn:active:not(:disabled){
-    background: var(--green-soft);
-  }
-
-  .page-indicator{
-    flex:1;
-    text-align:center;
-    font-size: 13px;
-    color: var(--ink);
-  }
-  .page-indicator #curPage{
-    font-weight:bold;
-    color: var(--brick);
-  }
-
-  .jump-row{
-    margin-top: 12px;
-    display:flex;
-    align-items:center;
-    gap: 8px;
-    font-size: 13px;
-  }
-  .jump-row input{
-    width: 64px;
-    text-align:center;
-    font-size: 14px;
-    padding: 6px 4px;
-    border: 1px solid var(--green-soft);
-    border-radius: 6px;
-    background: #fffdf7;
-    color: var(--ink);
-  }
-  .jump-row button{
-    border:none;
-    background: var(--brick);
-    color:#fffdf7;
-    font-size: 13px;
-    padding: 7px 14px;
-    border-radius: 999px;
-    cursor:pointer;
-  }
-  .jump-row button:active{
-    background: var(--brick-soft);
-  }
+  .book-stage{ position:relative; display:flex; justify-content:center; align-items:center; margin: 0 auto 12px; width:100%; }
+  .book{ position:relative; width: min(84vw, 420px); aspect-ratio: 408 / 596.4; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y; -webkit-user-select:none; user-select:none; }
+  /* single <img>, we just swap its src — no per-page DOM, no 3D transform stack.
+     This is the whole fix for the slowness/shake: earlier versions kept every
+     page (or every page in a whole 90-150 page volume) as a stacked, rotated
+     DOM node; here there is only ever ONE image element in the book at a time. */
+  .book img{ width:100%; height:100%; display:block; object-fit: cover; opacity:0; transition: opacity 0.15s ease; }
+  .book img.ready{ opacity:1; }
+  .book .spinner{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(237,231,214,0.5); font-size:12px; letter-spacing:0.1em; }
+  .nav-btn{ position:absolute; top:50%; transform: translateY(-50%); width:42px; height:42px; border-radius:50%; border:none; background: rgba(255,255,255,0.85); color: var(--pine-deep); font-size:18px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 14px rgba(43,42,37,0.18); }
+  .nav-btn:disabled{ opacity:0.25; cursor:default; }
+  .nav-prev{ left: -6px; } .nav-next{ right: -6px; }
+  @media (min-width: 640px){ .nav-prev{ left: -54px; } .nav-next{ right: -54px; } }
+  .page-indicator{ text-align:center; font-size:12px; color: var(--ink-soft); letter-spacing:0.1em; margin-bottom:6px; }
+  .page-indicator b{ color: var(--pine-deep); }
+  .progress-track{ width: min(84vw, 420px); height:2px; background: var(--line); margin: 0 auto 30px; border-radius:2px; overflow:hidden; }
+  .progress-fill{ height:100%; background: var(--brick); transition: width 0.15s ease; }
+  .hint{ text-align:center; font-size:11px; color: var(--ink-soft); letter-spacing:0.05em; margin-bottom: 30px; }
+  footer{ text-align:center; margin-top: 20px; padding-top:16px; border-top: 1px solid var(--line); font-size:11px; color: var(--ink-soft); letter-spacing:0.05em; }
 </style>
 </head>
 <body>
-
-<header>
-  <div class="crumb"><a href="index.html">法寶園地</a></div>
-  <h1>彌陀要解研習報告(淨空老法師編述)</h1>
-  <p class="subtitle">ONLINE READING · 電子書自架</p>
-</header>
-
-<div class="book-stage" id="bookStage">
-  <div class="page-frame" id="pageFrame">
-    <div class="loading" id="loadingText">頁面載入中…</div>
-    <img id="imgA" alt="page">
-    <img id="imgB" alt="page">
-    <div class="tap-zone left" id="tapLeft"></div>
-    <div class="tap-zone right" id="tapRight"></div>
+<div class="wrap">
+  <header>
+    <div class="brand"><a href="index.html" style="color:inherit; text-decoration:none;">← 法寶園地</a><span>ONLINE READING · 電子書自架</span></div>
+  </header>
+  <div class="title-block">
+    <h1>彌陀要解研習報告</h1>
+    <div class="subtitle">淨空老法師編述 · 全書 78 頁</div>
   </div>
-
-  <div class="nav-row">
-    <button class="nav-btn" id="prevBtn">◀ 上一頁</button>
-    <div class="page-indicator">第 <span id="curPage">1</span> 頁 / 共 <span id="totalPage">78</span> 頁</div>
-    <button class="nav-btn" id="nextBtn">下一頁 ▶</button>
+  <div class="jump-bar">
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput" placeholder="頁碼" autocomplete="off">
+    <button id="jumpBtn">跳到該頁</button>
+    <span class="sep">共 78 頁</span>
   </div>
-
-  <div class="jump-row">
-    <span>跳到第</span>
-    <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput">
-    <span>頁</span>
-    <button id="jumpBtn">跳頁</button>
+  <div class="book-stage">
+    <button class="nav-btn nav-prev" id="prevBtn" aria-label="上一頁">‹</button>
+    <div class="book" id="book">
+      <div class="spinner" id="spinner">載入中…</div>
+      <img id="pageImg" alt="">
+    </div>
+    <button class="nav-btn nav-next" id="nextBtn" aria-label="下一頁">›</button>
   </div>
+  <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">78</span> 頁</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="hint">點左右箭頭、滑動，或按鍵盤方向鍵翻頁；也可以直接輸入頁碼跳頁</div>
+<footer>香光淨宗學會 · 法寶園地電子書 &nbsp;|&nbsp; 本頁面自行架設，取代原付費平台</footer>
 </div>
-
 <script>
-(function(){
-  var IMG_DIR = "ab0205-images/";
-  var TOTAL = 78;
+const TOTAL = 78;
+const IMG_DIR = 'ab0205-images/';
+function srcFor(n){ return IMG_DIR + String(n).padStart(4,'0') + '.jpg'; }
 
-  var cur = 1;
-  var isAnimating = false;
-  var imgs = [document.getElementById('imgA'), document.getElementById('imgB')];
-  var activeIdx = 0;
-  var loadingEl = document.getElementById('loadingText');
-  var frameEl = document.getElementById('pageFrame');
-  var curPageEl = document.getElementById('curPage');
-  var prevBtn = document.getElementById('prevBtn');
-  var nextBtn = document.getElementById('nextBtn');
-  var preloadCache = {};
+let current = 1; // 1-indexed, matches printed filenames / page-jump input
+const pageImg = document.getElementById('pageImg');
+const spinner = document.getElementById('spinner');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const curPageEl = document.getElementById('curPage');
+const progressFill = document.getElementById('progressFill');
+const jumpInput = document.getElementById('jumpInput');
+const jumpBtn = document.getElementById('jumpBtn');
 
-  function pad4(n){
-    var s = '' + n;
-    while (s.length < 4) s = '0' + s;
-    return s;
+// Preload cache: a handful of Image() objects around the current page so
+// tapping next/prev is instant even though nothing is embedded up front.
+const cache = new Map();
+function preload(n){
+  if(n < 1 || n > TOTAL || cache.has(n)) return;
+  const im = new Image();
+  im.src = srcFor(n);
+  cache.set(n, im);
+}
+function showPage(n, push){
+  current = Math.min(Math.max(n,1), TOTAL);
+  pageImg.classList.remove('ready');
+  spinner.style.display = 'flex';
+  const target = srcFor(current);
+  const cached = cache.get(current);
+  const finish = () => {
+    pageImg.src = target;
+    pageImg.classList.add('ready');
+    spinner.style.display = 'none';
+  };
+  if(cached && cached.complete){ finish(); }
+  else {
+    const im = new Image();
+    im.onload = finish;
+    im.src = target;
+    cache.set(current, im);
   }
-  function srcFor(n){
-    return IMG_DIR + pad4(n) + '.jpg';
+  curPageEl.textContent = current;
+  progressFill.style.width = ((current-1) / (TOTAL-1) * 100) + '%';
+  prevBtn.disabled = current <= 1;
+  nextBtn.disabled = current >= TOTAL;
+  // warm the next couple of pages in both directions so the swipe/tap feels instant
+  preload(current+1); preload(current+2); preload(current-1);
+}
+function next(){ if(current < TOTAL) showPage(current+1); }
+function prev(){ if(current > 1) showPage(current-1); }
+
+nextBtn.addEventListener('click', next);
+prevBtn.addEventListener('click', prev);
+document.addEventListener('keydown', (e) => { if(e.key === 'ArrowRight') next(); if(e.key === 'ArrowLeft') prev(); });
+jumpBtn.addEventListener('click', () => {
+  const n = parseInt(jumpInput.value, 10);
+  if(!isNaN(n)) showPage(n);
+});
+jumpInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') jumpBtn.click(); });
+
+// swipe: simple discrete gesture on release, no per-frame dragging of a big
+// DOM tree — this is what keeps it smooth even on a large book.
+let touchStartX = null, touchStartY = null;
+const book = document.getElementById('book');
+book.addEventListener('touchstart', (e) => {
+  touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
+}, { passive: true });
+book.addEventListener('touchend', (e) => {
+  if(touchStartX === null) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if(Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)){
+    if(dx < 0) next(); else prev();
   }
-  function preload(n){
-    if (n < 1 || n > TOTAL || preloadCache[n]) return;
-    var im = new Image();
-    im.src = srcFor(n);
-    preloadCache[n] = im;
-  }
+  touchStartX = null; touchStartY = null;
+});
 
-  function render(n, animate){
-    var showImg = imgs[activeIdx];
-    var hideImg = imgs[1 - activeIdx];
-    var next = 1 - activeIdx;
-
-    var loaded = false;
-    function onReady(){
-      if (loaded) return;
-      loaded = true;
-      loadingEl.classList.add('hidden');
-      imgs[next].classList.add('shown');
-      imgs[1-next].classList.remove('shown');
-      activeIdx = next;
-      isAnimating = false;
-    }
-
-    loadingEl.classList.remove('hidden');
-    var img = imgs[next];
-    img.onload = onReady;
-    img.src = srcFor(n);
-    if (img.complete && img.naturalWidth > 0) onReady();
-
-    curPageEl.textContent = n;
-    prevBtn.disabled = (n <= 1);
-    nextBtn.disabled = (n >= TOTAL);
-
-    preload(n + 1);
-    preload(n - 1);
-  }
-
-  function goTo(n){
-    if (isAnimating) return;
-    if (n < 1 || n > TOTAL || n === cur) return;
-    isAnimating = true;
-    cur = n;
-    render(n, true);
-  }
-
-  prevBtn.addEventListener('click', function(){ goTo(cur - 1); });
-  nextBtn.addEventListener('click', function(){ goTo(cur + 1); });
-  document.getElementById('tapLeft').addEventListener('click', function(){ goTo(cur - 1); });
-  document.getElementById('tapRight').addEventListener('click', function(){ goTo(cur + 1); });
-
-  document.getElementById('jumpBtn').addEventListener('click', doJump);
-  document.getElementById('jumpInput').addEventListener('keydown', function(e){
-    if (e.key === 'Enter') doJump();
-  });
-  function doJump(){
-    var v = parseInt(document.getElementById('jumpInput').value, 10);
-    if (!isNaN(v)) goTo(v);
-  }
-
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'ArrowLeft') goTo(cur - 1);
-    if (e.key === 'ArrowRight') goTo(cur + 1);
-  });
-
-  // Touch handling: intercept horizontal swipes so the browser doesn't
-  // fight the page-turn gesture (prevents the shaking/jank issue).
-  var touchStartX = null, touchStartY = null, touchLocked = null;
-  var stage = document.getElementById('bookStage');
-  stage.addEventListener('touchstart', function(e){
-    if (e.touches.length !== 1) return;
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
-    touchLocked = null;
-  }, {passive:true});
-
-  stage.addEventListener('touchmove', function(e){
-    if (touchStartX === null) return;
-    var dx = e.touches[0].clientX - touchStartX;
-    var dy = e.touches[0].clientY - touchStartY;
-    if (touchLocked === null) {
-      touchLocked = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
-    }
-    if (touchLocked === 'h') {
-      e.preventDefault();
-    }
-  }, {passive:false});
-
-  stage.addEventListener('touchend', function(e){
-    if (touchStartX === null || touchLocked !== 'h') {
-      touchStartX = null;
-      return;
-    }
-    var dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 40) {
-      if (dx < 0) goTo(cur + 1);
-      else goTo(cur - 1);
-    }
-    touchStartX = null;
-  });
-
-  // initial render
-  render(cur, false);
-})();
+showPage(1);
 </script>
-
 </body>
 </html>
