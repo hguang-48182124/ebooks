@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>佛說大乘無量壽莊嚴清淨平等覺經卷首</title>
+<style>
+  :root{
+    --paper:#f4ead9;
+    --paper-dark:#e9dcc4;
+    --ink:#3a2e22;
+    --maroon:#7A2321;
+    --green-deep:#2f4a3c;
+    --gold:#b08d46;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;
+    background:var(--paper-dark);
+    color:var(--ink);
+    font-family:"PingFang TC","Microsoft JhengHei","Noto Serif TC",serif;
+    height:100%;
+    overflow:hidden;
+  }
+  .wrap{
+    display:flex;
+    flex-direction:column;
+    height:100%;
+  }
+  header{
+    padding:10px 16px 8px;
+    text-align:center;
+    background:linear-gradient(180deg, var(--paper) 0%, var(--paper-dark) 100%);
+    border-bottom:1px solid var(--gold);
+    flex-shrink:0;
+  }
+  header a.home{
+    color:var(--maroon);
+    text-decoration:none;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:1px;
+  }
+  header a.home:hover{ text-decoration:underline; }
+  h1{
+    margin:4px 0 2px;
+    font-size:17px;
+    font-weight:700;
+    color:var(--maroon);
+    line-height:1.4;
+  }
+  .subtitle{
+    margin:0;
+    font-size:11px;
+    letter-spacing:1.5px;
+    color:var(--green-deep);
+    opacity:.85;
+  }
+
+  .book-stage{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    padding:6px 4px;
+    overflow:hidden;
+    touch-action: pan-y;
+    user-select:none;
+    -webkit-user-select:none;
+  }
+  .page-frame{
+    position:relative;
+    max-height:100%;
+    max-width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#fff;
+    box-shadow:0 6px 24px rgba(0,0,0,.28);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  #pageImg{
+    max-height:100%;
+    max-width:100%;
+    display:block;
+    opacity:1;
+    transition:opacity .18s ease;
+  }
+  #pageImg.fading{ opacity:0; }
+
+  .nav-btn{
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:20%;
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    color:rgba(122,35,33,.35);
+    font-size:26px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-btn:active{ color:rgba(122,35,33,.65); }
+  .nav-btn.prev{ left:0; justify-content:flex-start; padding-left:4px; }
+  .nav-btn.next{ right:0; justify-content:flex-end; padding-right:4px; }
+
+  footer{
+    flex-shrink:0;
+    padding:8px 12px 12px;
+    text-align:center;
+    background:var(--paper);
+    border-top:1px solid var(--gold);
+  }
+  .page-indicator{
+    font-size:12px;
+    color:var(--ink);
+    margin-bottom:6px;
+  }
+  .jump-row{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:6px;
+  }
+  .jump-row input{
+    width:56px;
+    text-align:center;
+    padding:5px 4px;
+    border:1px solid var(--gold);
+    border-radius:4px;
+    font-size:13px;
+    background:#fffdf8;
+  }
+  .jump-row button{
+    padding:5px 12px;
+    border:1px solid var(--green-deep);
+    background:var(--green-deep);
+    color:#fff;
+    border-radius:4px;
+    font-size:12px;
+    cursor:pointer;
+  }
+  .jump-row button:active{ opacity:.8; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="index.html">法寶園地</a>
+    <h1>佛說大乘無量壽莊嚴清淨平等覺經卷首</h1>
+    <p class="subtitle">ONLINE READING · 電子書自架</p>
+  </header>
+
+  <div class="book-stage" id="bookStage">
+    <div class="page-frame">
+      <img id="pageImg" src="" alt="page">
+    </div>
+    <button class="nav-btn prev" id="prevBtn" aria-label="上一頁">&#10094;</button>
+    <button class="nav-btn next" id="nextBtn" aria-label="下一頁">&#10095;</button>
+  </div>
+
+  <footer>
+    <div class="page-indicator">第 <span id="curPage">1</span> / <span id="totalPage">80</span> 頁</div>
+    <div class="jump-row">
+      <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput" placeholder="頁碼">
+      <button id="jumpBtn">跳頁</button>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var IMG_DIR = "ac04-images/";
+  var TOTAL = 80;
+  var cur = 1;
+  var isAnimating = false;
+
+  var img = document.getElementById('pageImg');
+  var curPageEl = document.getElementById('curPage');
+  var totalPageEl = document.getElementById('totalPage');
+  totalPageEl.textContent = TOTAL;
+
+  function pad(n){ return String(n).padStart(4,'0'); }
+
+  function preload(n){
+    if(n < 1 || n > TOTAL) return;
+    var pre = new Image();
+    pre.src = IMG_DIR + pad(n) + '.jpg';
+  }
+
+  function render(n, animate){
+    n = Math.max(1, Math.min(TOTAL, n));
+    cur = n;
+    curPageEl.textContent = cur;
+    if(animate){
+      img.classList.add('fading');
+      setTimeout(function(){
+        img.src = IMG_DIR + pad(cur) + '.jpg';
+        img.classList.remove('fading');
+      }, 90);
+    } else {
+      img.src = IMG_DIR + pad(cur) + '.jpg';
+    }
+    preload(cur+1);
+    preload(cur-1);
+  }
+
+  function next(){
+    if(isAnimating) return;
+    if(cur >= TOTAL) return;
+    isAnimating = true;
+    render(cur+1, true);
+    setTimeout(function(){ isAnimating = false; }, 220);
+  }
+  function prev(){
+    if(isAnimating) return;
+    if(cur <= 1) return;
+    isAnimating = true;
+    render(cur-1, true);
+    setTimeout(function(){ isAnimating = false; }, 220);
+  }
+
+  document.getElementById('nextBtn').addEventListener('click', next);
+  document.getElementById('prevBtn').addEventListener('click', prev);
+
+  document.getElementById('jumpBtn').addEventListener('click', function(){
+    var v = parseInt(document.getElementById('jumpInput').value, 10);
+    if(!isNaN(v)){ render(v, false); }
+  });
+  document.getElementById('jumpInput').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){
+      var v = parseInt(this.value, 10);
+      if(!isNaN(v)){ render(v, false); }
+    }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight') next();
+    if(e.key === 'ArrowLeft') prev();
+  });
+
+  // touch swipe handling — attacked to intercept horizontal gesture so the
+  // browser doesn't fight the JS over left/right pan
+  var stage = document.getElementById('bookStage');
+  var touchStartX = null, touchStartY = null, touchLocked = null;
+
+  stage.addEventListener('touchstart', function(e){
+    var t = e.touches[0];
+    touchStartX = t.clientX;
+    touchStartY = t.clientY;
+    touchLocked = null;
+  }, {passive:true});
+
+  stage.addEventListener('touchmove', function(e){
+    if(touchStartX === null) return;
+    var t = e.touches[0];
+    var dx = t.clientX - touchStartX;
+    var dy = t.clientY - touchStartY;
+    if(touchLocked === null){
+      touchLocked = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+    }
+    if(touchLocked === 'h'){
+      e.preventDefault();
+    }
+  }, {passive:false});
+
+  stage.addEventListener('touchend', function(e){
+    if(touchStartX === null) return;
+    var t = e.changedTouches[0];
+    var dx = t.clientX - touchStartX;
+    if(touchLocked === 'h'){
+      if(dx < -40) next();
+      else if(dx > 40) prev();
+    }
+    touchStartX = null; touchStartY = null; touchLocked = null;
+  }, {passive:true});
+
+  render(1, false);
+})();
+</script>
+</body>
+</html>
