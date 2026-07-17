@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>淨土大經科註參考資料【下冊】 · 線上電子書</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
+
+  :root{
+    --paper: #EDE7D6;
+    --paper-deep: #E2DAC3;
+    --ink: #2B2A25;
+    --ink-soft: #5C5A4E;
+    --pine: #33473F;
+    --pine-deep: #22322C;
+    --brick: #A85338;
+    --gold: #B8925A;
+    --line: rgba(43,42,37,0.12);
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  html,body{
+    height:100%;
+    background: var(--paper);
+    font-family: 'Noto Sans TC', sans-serif;
+    color: var(--ink);
+    overflow-x:hidden;
+  }
+
+  body{
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(184,146,90,0.10), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(51,71,63,0.08), transparent 45%);
+  }
+
+  .wrap{
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    padding-bottom:18px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 28px;
+  }
+  .brand{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size: 20px;
+    letter-spacing: 0.04em;
+    color: var(--pine-deep);
+    text-decoration:none;
+  }
+  .brand span{
+    display:block;
+    font-family:'Noto Sans TC',sans-serif;
+    font-weight:300;
+    font-size:11px;
+    letter-spacing:0.24em;
+    color: var(--ink-soft);
+    margin-top:4px;
+  }
+  .install-tag{
+    font-size:11px;
+    color: var(--pine);
+    border:1px solid var(--pine);
+    padding:5px 11px;
+    border-radius:100px;
+    letter-spacing:0.05em;
+    white-space:nowrap;
+  }
+
+  /* ---------- Hero / title block ---------- */
+  .title-block{
+    text-align:center;
+    margin-bottom: 30px;
+  }
+  h1{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size: clamp(28px, 6vw, 42px);
+    color: var(--pine-deep);
+    line-height:1.3;
+  }
+  .subtitle{
+    margin-top:10px;
+    font-size:13px;
+    color: var(--ink-soft);
+    letter-spacing:0.03em;
+  }
+
+  /* ---------- Jump to page (must stay above book-stage) ---------- */
+  .jump-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin-bottom: 20px;
+  }
+  .jump-row input{
+    width: 64px;
+    text-align:center;
+    font-size:13px;
+    padding: 8px 6px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    background: var(--paper-deep);
+    color: var(--ink);
+  }
+  .jump-row button{
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:12px;
+    padding: 8px 14px;
+    border-radius:6px;
+    border:1px solid var(--pine);
+    background: transparent;
+    color: var(--pine);
+    cursor:pointer;
+  }
+  .jump-row button:hover{ background: rgba(51,71,63,0.08); }
+  .jump-row span{
+    font-size:12px;
+    color: var(--ink-soft);
+  }
+
+  /* ---------- Book viewer ---------- */
+  .book-stage{
+    position:relative;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin: 6px auto 18px;
+    width:100%;
+  }
+
+  .book{
+    position:relative;
+    width: min(78vw, 380px);
+    aspect-ratio: 408 / 596.4;
+    border-radius: 3px;
+    overflow:hidden;
+    box-shadow:
+      0 2px 4px rgba(43,42,37,0.15),
+      0 18px 40px -12px rgba(34,50,44,0.35),
+      0 0 0 1px rgba(43,42,37,0.06);
+    background: var(--pine-deep);
+    touch-action: pan-y pinch-zoom;
+    user-select: none;
+  }
+
+  .book img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit: cover;
+  }
+
+  .nav-btn{
+    position:absolute;
+    top:50%;
+    transform: translateY(-50%);
+    width:42px; height:42px;
+    border-radius:50%;
+    border:none;
+    background: rgba(255,255,255,0.85);
+    color: var(--pine-deep);
+    font-size:18px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    box-shadow: 0 4px 14px rgba(43,42,37,0.18);
+    transition: background 0.2s, opacity 0.2s;
+    z-index:5;
+  }
+  .nav-btn:hover{ background: #fff; }
+  .nav-btn:disabled{ opacity:0.25; cursor:default; }
+  .nav-prev{ left: -6px; }
+  .nav-next{ right: -6px; }
+  @media (min-width: 640px){
+    .nav-prev{ left: -54px; }
+    .nav-next{ right: -54px; }
+  }
+
+  .page-indicator{
+    text-align:center;
+    font-size:12px;
+    color: var(--ink-soft);
+    letter-spacing:0.1em;
+    margin-bottom:16px;
+  }
+  .page-indicator b{ color: var(--pine-deep); }
+
+  .progress-track{
+    width: min(78vw, 380px);
+    height:2px;
+    background: var(--line);
+    margin: 0 auto 24px;
+    border-radius:2px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background: var(--brick);
+    transition: width 0.3s ease;
+  }
+
+  .hint{
+    text-align:center;
+    font-size:11px;
+    color: var(--ink-soft);
+    letter-spacing:0.05em;
+    margin-bottom: 44px;
+  }
+
+  footer{
+    text-align:center;
+    margin-top: 50px;
+    padding-top:20px;
+    border-top: 1px solid var(--line);
+    font-size:11px;
+    color: var(--ink-soft);
+    letter-spacing:0.05em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <a class="brand" href="index.html">← 法寶園地<span>ONLINE READING · 電子書自架</span></a>
+    <div class="install-tag" id="badgeTag">全書 726 頁</div>
+  </header>
+
+  <div class="title-block">
+    <h1>淨土大經科註參考資料【下冊】</h1>
+    <div class="subtitle">上勝下妙法師 · 全書 726 頁</div>
+  </div>
+
+  <div class="jump-row">
+    <span>跳到第</span>
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput">
+    <span>頁</span>
+    <button id="jumpBtn">前往</button>
+  </div>
+
+  <div class="book-stage">
+    <button class="nav-btn nav-prev" id="prevBtn" aria-label="上一頁">‹</button>
+    <div class="book" id="book"><img id="pageImg" alt="頁面圖片"></div>
+    <button class="nav-btn nav-next" id="nextBtn" aria-label="下一頁">›</button>
+  </div>
+
+  <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">726</span> 頁</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+  <div class="hint">點左右箭頭、滑動，或按鍵盤方向鍵翻頁</div>
+
+  <footer>法寶園地 · 電子書自架</footer>
+</div>
+
+<script>
+  const IMG_DIR = "ac07-images/";
+  const TOTAL_PAGES = 726;
+
+  const book = document.getElementById('book');
+  const pageImg = document.getElementById('pageImg');
+  const curPageEl = document.getElementById('curPage');
+  const totalPageEl = document.getElementById('totalPage');
+  const progressFill = document.getElementById('progressFill');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const jumpInput = document.getElementById('jumpInput');
+  const jumpBtn = document.getElementById('jumpBtn');
+
+  totalPageEl.textContent = TOTAL_PAGES;
+
+  let current = 1;
+  let isAnimating = false;
+
+  function pad4(n){ return String(n).padStart(4,'0'); }
+
+  function showPage(n){
+    if(n < 1 || n > TOTAL_PAGES) return;
+    current = n;
+    pageImg.src = IMG_DIR + pad4(n) + '.jpg';
+    curPageEl.textContent = n;
+    progressFill.style.width = (n / TOTAL_PAGES * 100) + '%';
+    prevBtn.disabled = (n === 1);
+    nextBtn.disabled = (n === TOTAL_PAGES);
+    if(n+1 <= TOTAL_PAGES){ const im=new Image(); im.src = IMG_DIR + pad4(n+1) + '.jpg'; }
+    if(n-1 >= 1){ const im2=new Image(); im2.src = IMG_DIR + pad4(n-1) + '.jpg'; }
+  }
+
+  function lockAnimation(){
+    isAnimating = true;
+    setTimeout(()=>{ isAnimating = false; }, 220);
+  }
+
+  function next(){
+    if(isAnimating) return;
+    if(current < TOTAL_PAGES){ lockAnimation(); showPage(current+1); }
+  }
+  function prev(){
+    if(isAnimating) return;
+    if(current > 1){ lockAnimation(); showPage(current-1); }
+  }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'ArrowRight') next();
+    if(e.key === 'ArrowLeft') prev();
+  });
+
+  jumpBtn.addEventListener('click', ()=>{
+    const n = parseInt(jumpInput.value, 10);
+    if(!isNaN(n)) showPage(n);
+  });
+  jumpInput.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter'){
+      const n = parseInt(jumpInput.value, 10);
+      if(!isNaN(n)) showPage(n);
+    }
+  });
+
+  // ---- touch swipe handling (anti-jitter) ----
+  let touchStartX = 0, touchStartY = 0, touchDeltaX = 0, isSwiping = false;
+
+  book.addEventListener('touchstart', (e)=>{
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchDeltaX = 0;
+    isSwiping = false;
+  }, {passive:true});
+
+  book.addEventListener('touchmove', (e)=>{
+    const dx = e.touches[0].clientX - touchStartX;
+    const dy = e.touches[0].clientY - touchStartY;
+    if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10){
+      isSwiping = true;
+      touchDeltaX = dx;
+      if(book.style.touchAction !== 'auto'){
+        e.preventDefault();
+      }
+    }
+  }, {passive:false});
+
+  book.addEventListener('touchend', ()=>{
+    if(isSwiping && Math.abs(touchDeltaX) > 40){
+      if(touchDeltaX < 0) next(); else prev();
+    }
+    isSwiping = false;
+    touchDeltaX = 0;
+  });
+
+  // ---- pinch-zoom aware touch-action toggle ----
+  function updateZoomState(){
+    if(!window.visualViewport) return;
+    const zoomedIn = window.visualViewport.scale > 1.02;
+    book.style.touchAction = zoomedIn ? 'auto' : 'pan-y pinch-zoom';
+  }
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', updateZoomState);
+    window.visualViewport.addEventListener('scroll', updateZoomState);
+  }
+
+  showPage(1);
+</script>
+</body>
+</html>
