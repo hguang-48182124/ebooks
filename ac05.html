@@ -105,6 +105,40 @@
     letter-spacing:0.03em;
   }
 
+  /* ---------- Jump to page (moved above book) ---------- */
+  .jump-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin-bottom: 20px;
+  }
+  .jump-row input{
+    width: 64px;
+    text-align:center;
+    font-size:13px;
+    padding: 8px 6px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    background: var(--paper-deep);
+    color: var(--ink);
+  }
+  .jump-row button{
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:12px;
+    padding: 8px 14px;
+    border-radius:6px;
+    border:1px solid var(--pine);
+    background: transparent;
+    color: var(--pine);
+    cursor:pointer;
+  }
+  .jump-row button:hover{ background: rgba(51,71,63,0.08); }
+  .jump-row span{
+    font-size:12px;
+    color: var(--ink-soft);
+  }
+
   /* ---------- Book viewer ---------- */
   .book-stage{
     position:relative;
@@ -185,40 +219,6 @@
     transition: width 0.3s ease;
   }
 
-  /* ---------- Jump to page ---------- */
-  .jump-row{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    margin-bottom: 20px;
-  }
-  .jump-row input{
-    width: 64px;
-    text-align:center;
-    font-size:13px;
-    padding: 8px 6px;
-    border-radius:6px;
-    border:1px solid var(--line);
-    background: var(--paper-deep);
-    color: var(--ink);
-  }
-  .jump-row button{
-    font-family:'Noto Sans TC', sans-serif;
-    font-size:12px;
-    padding: 8px 14px;
-    border-radius:6px;
-    border:1px solid var(--pine);
-    background: transparent;
-    color: var(--pine);
-    cursor:pointer;
-  }
-  .jump-row button:hover{ background: rgba(51,71,63,0.08); }
-  .jump-row span{
-    font-size:12px;
-    color: var(--ink-soft);
-  }
-
   .hint{
     text-align:center;
     font-size:11px;
@@ -251,6 +251,13 @@
     <div class="subtitle">淨空老法師著 · 全書 117 頁</div>
   </div>
 
+  <div class="jump-row">
+    <span>跳到第</span>
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput">
+    <span>頁</span>
+    <button id="jumpBtn">前往</button>
+  </div>
+
   <div class="book-stage">
     <button class="nav-btn nav-prev" id="prevBtn" aria-label="上一頁">‹</button>
     <div class="book" id="book"><img id="pageImg" alt="頁面圖片"></div>
@@ -259,13 +266,6 @@
 
   <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">117</span> 頁</div>
   <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-
-  <div class="jump-row">
-    <span>跳到第</span>
-    <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput">
-    <span>頁</span>
-    <button id="jumpBtn">前往</button>
-  </div>
 
   <div class="hint">點左右箭頭、滑動，或按鍵盤方向鍵翻頁</div>
 
