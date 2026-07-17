@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>淨土五經一論 · 線上電子書</title>
 <style>
   :root{
@@ -68,7 +68,7 @@
     align-items:center;
     justify-content:center;
     min-height: 0;
-    touch-action: pan-y;
+    touch-action: pan-y pinch-zoom;
     user-select: none;
     -webkit-user-select: none;
   }
@@ -274,6 +274,18 @@
 
   // Touch handling: intercept horizontal swipe, let vertical scroll pass through
   let touchStartX = 0, touchStartY = 0, touchLocked = null;
+  let isZoomedIn = false;
+
+  function updateZoomState(){
+    if (!window.visualViewport) return;
+    isZoomedIn = window.visualViewport.scale > 1.02;
+    stage.style.touchAction = isZoomedIn ? 'auto' : 'pan-y pinch-zoom';
+  }
+  if (window.visualViewport){
+    window.visualViewport.addEventListener('resize', updateZoomState);
+    window.visualViewport.addEventListener('scroll', updateZoomState);
+  }
+
   stage.addEventListener('touchstart', function(e){
     const t = e.touches[0];
     touchStartX = t.clientX;
@@ -282,6 +294,7 @@
   }, {passive:true});
 
   stage.addEventListener('touchmove', function(e){
+    if (isZoomedIn) return; // 放大時完全交給瀏覽器原生平移，不攔截
     const t = e.touches[0];
     const dx = t.clientX - touchStartX;
     const dy = t.clientY - touchStartY;
@@ -294,7 +307,7 @@
   }, {passive:false});
 
   stage.addEventListener('touchend', function(e){
-    if (touchLocked !== 'x') return;
+    if (isZoomedIn || touchLocked !== 'x') return;
     const t = e.changedTouches[0];
     const dx = t.clientX - touchStartX;
     if (Math.abs(dx) > 40){
