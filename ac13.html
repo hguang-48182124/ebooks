@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>佛說大乘無量壽莊嚴清淨平等覺經解 · 線上電子書</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
@@ -30,7 +30,7 @@
   .jump-bar .sep{ font-size:12px; color:var(--ink-soft); }
 
   .book-stage{ position:relative; display:flex; justify-content:center; align-items:center; margin: 0 auto 12px; width:100%; }
-  .book{ position:relative; width: min(84vw, 420px); aspect-ratio: 408 / 596.4; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y; -webkit-user-select:none; user-select:none; }
+  .book{ position:relative; width: min(84vw, 420px); aspect-ratio: 408 / 596.4; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y pinch-zoom; -webkit-user-select:none; user-select:none; }
   /* single <img>, we just swap its src — no per-page DOM, no 3D transform stack.
      This is the whole fix for the slowness/shake: earlier versions kept every
      page (or every page in a whole 90-150 page volume) as a stacked, rotated
@@ -154,6 +154,17 @@ book.addEventListener('touchend', (e) => {
   }
   touchStartX = null; touchStartY = null;
 });
+
+// 放大時允許自由左右上下平移，縮回原尺寸時恢復左右滑動＝翻頁
+function updateZoomState(){
+  if(!window.visualViewport) return;
+  const zoomedIn = window.visualViewport.scale > 1.02;
+  book.style.touchAction = zoomedIn ? 'auto' : 'pan-y pinch-zoom';
+}
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', updateZoomState);
+  window.visualViewport.addEventListener('scroll', updateZoomState);
+}
 
 showPage(1);
 </script>
