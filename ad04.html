@@ -53,12 +53,12 @@
   </header>
   <div class="title-block">
     <h1>觀無量壽佛經疏菁華</h1>
-    <div class="subtitle">全書 56 頁</div>
+    <div class="subtitle">全書 58 頁</div>
   </div>
   <div class="jump-bar">
     <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput" placeholder="頁碼" autocomplete="off">
     <button id="jumpBtn">跳到該頁</button>
-    <span class="sep">共 56 頁</span>
+    <span class="sep">共 58 頁</span>
   </div>
   <div class="book-stage">
     <button class="nav-btn nav-prev" id="prevBtn" aria-label="上一頁">‹</button>
@@ -68,15 +68,19 @@
     </div>
     <button class="nav-btn nav-next" id="nextBtn" aria-label="下一頁">›</button>
   </div>
-  <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">56</span> 頁</div>
+  <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">58</span> 頁</div>
   <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
   <div class="hint">點左右箭頭、滑動，或按鍵盤方向鍵翻頁；也可以直接輸入頁碼跳頁</div>
 <footer>香光淨宗學會 · 法寶園地電子書 &nbsp;|&nbsp; 本頁面自行架設，取代原付費平台</footer>
 </div>
 <script>
-const TOTAL = 56;
+const TOTAL = 58;
 const IMG_DIR = 'ad04-images/';
-function srcFor(n){ return IMG_DIR + String(n).padStart(4,'0') + '.jpg'; }
+function srcFor(n){
+  if(n === 1) return IMG_DIR + '0000.jpg';
+  if(n === TOTAL) return IMG_DIR + '9999.jpg';
+  return IMG_DIR + String(n-1).padStart(4,'0') + '.jpg';
+}
 
 let current = 1;
 const pageImg = document.getElementById('pageImg');
