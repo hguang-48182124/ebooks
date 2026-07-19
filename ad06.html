@@ -2,160 +2,309 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>佛說觀無量壽佛經義疏正觀記 · 線上電子書</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>佛說觀無量壽佛經義疏正觀記 · 香光電子書</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
   :root{
-    --paper: #EDE7D6; --paper-deep: #E2DAC3; --ink: #2B2A25; --ink-soft: #5C5A4E;
-    --pine: #33473F; --pine-deep: #22322C; --brick: #A85338; --gold: #B8925A;
-    --line: rgba(43,42,37,0.12);
+    --paper:#f5efe2;
+    --ink:#2f2a22;
+    --deep-green:#2f4a3c;
+    --brick:#a4472f;
+    --frame-bg:#ffffff;
   }
-  *{ box-sizing:border-box; margin:0; padding:0; }
-  html,body{ height:100%; background: var(--paper); font-family: 'Noto Sans TC', sans-serif; color: var(--ink); overflow-x:hidden; }
-  body{ background-image: radial-gradient(circle at 15% 10%, rgba(184,146,90,0.10), transparent 40%), radial-gradient(circle at 85% 90%, rgba(51,71,63,0.08), transparent 45%); }
-  .wrap{ max-width: 880px; margin: 0 auto; padding: 20px 16px 40px; min-height:100vh; display:flex; flex-direction:column; }
-  header{ display:flex; align-items:baseline; justify-content:space-between; padding-bottom:14px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
-  .brand{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: 18px; letter-spacing: 0.04em; color: var(--pine-deep); }
-  .brand span{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:300; font-size:10px; letter-spacing:0.2em; color: var(--ink-soft); margin-top:3px; }
-  .title-block{ text-align:center; margin-bottom: 14px; }
-  h1{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: clamp(22px, 5.5vw, 34px); color: var(--pine-deep); line-height:1.3; }
-  .subtitle{ margin-top:6px; font-size:12px; color: var(--ink-soft); letter-spacing:0.03em; }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"PingFang TC","Microsoft JhengHei","Noto Serif TC",serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:16px 12px 28px;
+  }
+  header{
+    width:100%;
+    max-width:720px;
+    text-align:center;
+    margin-bottom:10px;
+  }
+  header a.home-link{
+    display:inline-block;
+    font-size:13px;
+    color:var(--deep-green);
+    text-decoration:none;
+    border:1px solid var(--deep-green);
+    border-radius:20px;
+    padding:3px 14px;
+    margin-bottom:10px;
+  }
+  header a.home-link:active{opacity:0.7;}
+  h1{
+    font-size:22px;
+    line-height:1.35;
+    margin:4px 0 4px;
+    color:var(--ink);
+    font-weight:700;
+  }
+  .subtitle{
+    font-size:12.5px;
+    letter-spacing:0.06em;
+    color:var(--brick);
+    margin:0 0 2px;
+  }
 
-  /* ---- fast page navigation bar (replaces volume-nav; jump straight to a page) ---- */
-  .jump-bar{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
-  .jump-bar input{ width:64px; text-align:center; font-size:14px; padding:7px 6px; border-radius:6px; border:1px solid var(--line); background:#fff; }
-  .jump-bar button{ font-size:13px; padding:7px 14px; border-radius:6px; border:1px solid var(--pine); background:transparent; color:var(--pine); cursor:pointer; }
-  .jump-bar button:hover{ background: rgba(51,71,63,0.08); }
-  .jump-bar .sep{ font-size:12px; color:var(--ink-soft); }
+  .book-stage{
+    width:100%;
+    max-width:520px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .book{
+    position:relative;
+    width:100%;
+    aspect-ratio:850/1400;
+    background:var(--frame-bg);
+    border-radius:6px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.18);
+    overflow:hidden;
+    touch-action:pan-y pinch-zoom;
+    user-select:none;
+    -webkit-user-select:none;
+  }
+  .page-img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+    background:var(--frame-bg);
+  }
+  .loading{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    color:var(--ink);
+    background:var(--frame-bg);
+    opacity:0.85;
+  }
+  .loading.hidden{display:none;}
 
-  .book-stage{ position:relative; display:flex; justify-content:center; align-items:center; margin: 0 auto 12px; width:100%; }
-  .book{ position:relative; width: min(84vw, 420px); aspect-ratio: 408 / 596.4; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y; -webkit-user-select:none; user-select:none; }
-  /* single <img>, we just swap its src — no per-page DOM, no 3D transform stack.
-     This is the whole fix for the slowness/shake: earlier versions kept every
-     page (or every page in a whole 90-150 page volume) as a stacked, rotated
-     DOM node; here there is only ever ONE image element in the book at a time. */
-  .book img{ width:100%; height:100%; display:block; object-fit: cover; opacity:0; transition: opacity 0.15s ease; }
-  .book img.ready{ opacity:1; }
-  .book .spinner{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(237,231,214,0.5); font-size:12px; letter-spacing:0.1em; }
-  .nav-btn{ position:absolute; top:50%; transform: translateY(-50%); width:42px; height:42px; border-radius:50%; border:none; background: rgba(255,255,255,0.85); color: var(--pine-deep); font-size:18px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 14px rgba(43,42,37,0.18); }
-  .nav-btn:disabled{ opacity:0.25; cursor:default; }
-  .nav-prev{ left: -6px; } .nav-next{ right: -6px; }
-  @media (min-width: 640px){ .nav-prev{ left: -54px; } .nav-next{ right: -54px; } }
-  .page-indicator{ text-align:center; font-size:12px; color: var(--ink-soft); letter-spacing:0.1em; margin-bottom:6px; }
-  .page-indicator b{ color: var(--pine-deep); }
-  .progress-track{ width: min(84vw, 420px); height:2px; background: var(--line); margin: 0 auto 30px; border-radius:2px; overflow:hidden; }
-  .progress-fill{ height:100%; background: var(--brick); transition: width 0.15s ease; }
-  .hint{ text-align:center; font-size:11px; color: var(--ink-soft); letter-spacing:0.05em; margin-bottom: 30px; }
-  footer{ text-align:center; margin-top: 20px; padding-top:16px; border-top: 1px solid var(--line); font-size:11px; color: var(--ink-soft); letter-spacing:0.05em; }
+  .nav-row{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:12px;
+    gap:10px;
+  }
+  .nav-btn{
+    flex:0 0 auto;
+    background:var(--deep-green);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:10px 18px;
+    font-size:15px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-btn:disabled{
+    opacity:0.35;
+  }
+  .page-indicator{
+    flex:1;
+    text-align:center;
+    font-size:13.5px;
+    color:var(--ink);
+  }
+
+  .jump-row{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin-top:14px;
+  }
+  .jump-row input{
+    width:70px;
+    padding:8px 10px;
+    font-size:14px;
+    border:1px solid #c9bfa8;
+    border-radius:6px;
+    text-align:center;
+  }
+  .jump-row button{
+    background:var(--brick);
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    padding:8px 14px;
+    font-size:14px;
+  }
+  .jump-row span{
+    font-size:13px;
+    color:var(--ink);
+    opacity:0.75;
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="brand"><a href="index.html" style="color:inherit; text-decoration:none;">← 法寶園地</a><span>ONLINE READING · 電子書自架</span></div>
-  </header>
-  <div class="title-block">
-    <h1>佛說觀無量壽佛經義疏正觀記</h1>
-    <div class="subtitle">戒度法師記 · 全書 393 頁</div>
+
+<header>
+  <a class="home-link" href="index.html">法寶園地</a>
+  <h1>佛說觀無量壽佛經義疏正觀記</h1>
+  <div class="subtitle">ONLINE READING · 電子書自架</div>
+</header>
+
+<div class="book-stage">
+  <div class="book" id="book">
+    <img class="page-img" id="pageImg" alt="書頁">
+    <div class="loading" id="loading">載入中…</div>
   </div>
-  <div class="jump-bar">
-    <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput" placeholder="頁碼" autocomplete="off">
-    <button id="jumpBtn">跳到該頁</button>
-    <span class="sep">共 393 頁</span>
+
+  <div class="nav-row">
+    <button class="nav-btn" id="prevBtn">‹ 上一頁</button>
+    <div class="page-indicator">第 <span id="curPage">1</span>/<span id="totalPage">393</span> 頁</div>
+    <button class="nav-btn" id="nextBtn">下一頁 ›</button>
   </div>
-  <div class="book-stage">
-    <button class="nav-btn nav-prev" id="prevBtn" aria-label="上一頁">‹</button>
-    <div class="book" id="book">
-      <div class="spinner" id="spinner">載入中…</div>
-      <img id="pageImg" alt="">
-    </div>
-    <button class="nav-btn nav-next" id="nextBtn" aria-label="下一頁">›</button>
+
+  <div class="jump-row">
+    <span>跳到第</span>
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput">
+    <span>頁</span>
+    <button id="jumpBtn">跳頁</button>
   </div>
-  <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">393</span> 頁</div>
-  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-  <div class="hint">點左右箭頭、滑動，或按鍵盤方向鍵翻頁；也可以直接輸入頁碼跳頁</div>
-<footer>香光淨宗學會 · 法寶園地電子書 &nbsp;|&nbsp; 本頁面自行架設，取代原付費平台</footer>
 </div>
+
 <script>
-const TOTAL = 393;
-const IMG_DIR = 'ad06-images/';
-function srcFor(n){ return IMG_DIR + String(n).padStart(4,'0') + '.jpg'; }
+(function(){
+  const IMG_DIR = 'ad06-images/';
+  const TOTAL_PAGES = 393;
 
-let current = 1; // 1-indexed, matches printed filenames / page-jump input
-const pageImg = document.getElementById('pageImg');
-const spinner = document.getElementById('spinner');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-const curPageEl = document.getElementById('curPage');
-const progressFill = document.getElementById('progressFill');
-const jumpInput = document.getElementById('jumpInput');
-const jumpBtn = document.getElementById('jumpBtn');
+  const book = document.getElementById('book');
+  const img = document.getElementById('pageImg');
+  const loading = document.getElementById('loading');
+  const curPageEl = document.getElementById('curPage');
+  const totalPageEl = document.getElementById('totalPage');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const jumpInput = document.getElementById('jumpInput');
+  const jumpBtn = document.getElementById('jumpBtn');
 
-// Preload cache: a handful of Image() objects around the current page so
-// tapping next/prev is instant even though nothing is embedded up front.
-const cache = new Map();
-function preload(n){
-  if(n < 1 || n > TOTAL || cache.has(n)) return;
-  const im = new Image();
-  im.src = srcFor(n);
-  cache.set(n, im);
-}
-function showPage(n, push){
-  current = Math.min(Math.max(n,1), TOTAL);
-  pageImg.classList.remove('ready');
-  spinner.style.display = 'flex';
-  const target = srcFor(current);
-  const cached = cache.get(current);
-  const finish = () => {
-    pageImg.src = target;
-    pageImg.classList.add('ready');
-    spinner.style.display = 'none';
-  };
-  if(cached && cached.complete){ finish(); }
-  else {
+  totalPageEl.textContent = TOTAL_PAGES;
+
+  let current = 1;
+  let isAnimating = false;
+
+  function pad(n){ return String(n).padStart(4,'0'); }
+  function srcFor(n){ return IMG_DIR + pad(n) + '.jpg'; }
+
+  function preload(n){
+    if(n < 1 || n > TOTAL_PAGES) return;
     const im = new Image();
-    im.onload = finish;
-    im.src = target;
-    cache.set(current, im);
+    im.src = srcFor(n);
   }
-  curPageEl.textContent = current;
-  progressFill.style.width = ((current-1) / (TOTAL-1) * 100) + '%';
-  prevBtn.disabled = current <= 1;
-  nextBtn.disabled = current >= TOTAL;
-  // warm the next couple of pages in both directions so the swipe/tap feels instant
-  preload(current+1); preload(current+2); preload(current-1);
-}
-function next(){ if(current < TOTAL) showPage(current+1); }
-function prev(){ if(current > 1) showPage(current-1); }
 
-nextBtn.addEventListener('click', next);
-prevBtn.addEventListener('click', prev);
-document.addEventListener('keydown', (e) => { if(e.key === 'ArrowRight') next(); if(e.key === 'ArrowLeft') prev(); });
-jumpBtn.addEventListener('click', () => {
-  const n = parseInt(jumpInput.value, 10);
-  if(!isNaN(n)) showPage(n);
-});
-jumpInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') jumpBtn.click(); });
-
-// swipe: simple discrete gesture on release, no per-frame dragging of a big
-// DOM tree — this is what keeps it smooth even on a large book.
-let touchStartX = null, touchStartY = null;
-const book = document.getElementById('book');
-book.addEventListener('touchstart', (e) => {
-  touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
-}, { passive: true });
-book.addEventListener('touchend', (e) => {
-  if(touchStartX === null) return;
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  const dy = e.changedTouches[0].clientY - touchStartY;
-  if(Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)){
-    if(dx < 0) next(); else prev();
+  function showPage(n){
+    if(n < 1 || n > TOTAL_PAGES) return;
+    current = n;
+    loading.classList.remove('hidden');
+    img.src = srcFor(n);
+    img.onload = function(){ loading.classList.add('hidden'); };
+    img.onerror = function(){ loading.textContent = '圖片載入失敗'; };
+    curPageEl.textContent = n;
+    prevBtn.disabled = (n <= 1);
+    nextBtn.disabled = (n >= TOTAL_PAGES);
+    preload(n+1);
+    preload(n-1);
   }
-  touchStartX = null; touchStartY = null;
-});
 
-showPage(1);
+  function next(){
+    if(isAnimating || current >= TOTAL_PAGES) return;
+    isAnimating = true;
+    showPage(current+1);
+    setTimeout(function(){ isAnimating = false; }, 300);
+  }
+  function prev(){
+    if(isAnimating || current <= 1) return;
+    isAnimating = true;
+    showPage(current-1);
+    setTimeout(function(){ isAnimating = false; }, 300);
+  }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  jumpBtn.addEventListener('click', function(){
+    const n = parseInt(jumpInput.value, 10);
+    if(!isNaN(n) && n >= 1 && n <= TOTAL_PAGES){
+      showPage(n);
+    }
+    jumpInput.value = '';
+    jumpInput.blur();
+  });
+  jumpInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ jumpBtn.click(); }
+  });
+
+  // --- 滑動翻頁（含晃動修正）---
+  let touchStartX = 0, touchStartY = 0, touchMoving = false, swipeIntent = false;
+
+  book.addEventListener('touchstart', function(e){
+    if(e.touches.length !== 1) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchMoving = true;
+    swipeIntent = false;
+  }, {passive:true});
+
+  book.addEventListener('touchmove', function(e){
+    if(!touchMoving || e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - touchStartX;
+    const dy = e.touches[0].clientY - touchStartY;
+    if(!swipeIntent && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)){
+      swipeIntent = true;
+    }
+    if(swipeIntent && book.style.touchAction !== 'auto'){
+      e.preventDefault();
+    }
+  }, {passive:false});
+
+  book.addEventListener('touchend', function(e){
+    if(!touchMoving) return;
+    touchMoving = false;
+    if(!swipeIntent) return;
+    const dx = (e.changedTouches[0].clientX - touchStartX);
+    if(Math.abs(dx) > 40){
+      if(dx < 0){ next(); } else { prev(); }
+    }
+  });
+
+  // --- 放大後允許左右平移（雙指縮放修正）---
+  function updateZoomState(){
+    if(!window.visualViewport) return;
+    const zoomedIn = window.visualViewport.scale > 1.02;
+    book.style.touchAction = zoomedIn ? 'auto' : 'pan-y pinch-zoom';
+  }
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', updateZoomState);
+    window.visualViewport.addEventListener('scroll', updateZoomState);
+  }
+
+  // 鍵盤左右鍵（桌面測試方便）
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight') next();
+    if(e.key === 'ArrowLeft') prev();
+  });
+
+  showPage(1);
+})();
 </script>
+
 </body>
 </html>
