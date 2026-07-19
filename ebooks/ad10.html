@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>觀無量壽佛經疏上品上生章講記/大勢至菩薩念佛圓通章親聞記合刊 · 香光電子書</title>
+<style>
+  :root{
+    --paper:#f5efe2;
+    --ink:#2f2a22;
+    --deep-green:#2f4a3c;
+    --brick:#a4472f;
+    --frame-bg:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"PingFang TC","Microsoft JhengHei","Noto Serif TC",serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:16px 12px 28px;
+  }
+  header{
+    width:100%;
+    max-width:720px;
+    text-align:center;
+    margin-bottom:10px;
+  }
+  header a.home-link{
+    display:inline-block;
+    font-size:13px;
+    color:var(--deep-green);
+    text-decoration:none;
+    border:1px solid var(--deep-green);
+    border-radius:20px;
+    padding:3px 14px;
+    margin-bottom:10px;
+  }
+  header a.home-link:active{opacity:0.7;}
+  h1{
+    font-size:22px;
+    line-height:1.35;
+    margin:4px 0 4px;
+    color:var(--ink);
+    font-weight:700;
+  }
+  .subtitle{
+    font-size:12.5px;
+    letter-spacing:0.06em;
+    color:var(--brick);
+    margin:0 0 2px;
+  }
+
+  .book-stage{
+    width:100%;
+    max-width:520px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .book{
+    position:relative;
+    width:100%;
+    aspect-ratio:850/1400;
+    background:var(--frame-bg);
+    border-radius:6px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.18);
+    overflow:hidden;
+    touch-action:pan-y pinch-zoom;
+    user-select:none;
+    -webkit-user-select:none;
+  }
+  .page-img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+    background:var(--frame-bg);
+  }
+  .loading{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    color:var(--ink);
+    background:var(--frame-bg);
+    opacity:0.85;
+  }
+  .loading.hidden{display:none;}
+
+  .nav-row{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:12px;
+    gap:10px;
+  }
+  .nav-btn{
+    flex:0 0 auto;
+    background:var(--deep-green);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:10px 18px;
+    font-size:15px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-btn:disabled{
+    opacity:0.35;
+  }
+  .page-indicator{
+    flex:1;
+    text-align:center;
+    font-size:13.5px;
+    color:var(--ink);
+  }
+
+  .jump-row{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin-top:14px;
+  }
+  .jump-row input{
+    width:70px;
+    padding:8px 10px;
+    font-size:14px;
+    border:1px solid #c9bfa8;
+    border-radius:6px;
+    text-align:center;
+  }
+  .jump-row button{
+    background:var(--brick);
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    padding:8px 14px;
+    font-size:14px;
+  }
+  .jump-row span{
+    font-size:13px;
+    color:var(--ink);
+    opacity:0.75;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="home-link" href="index.html">法寶園地</a>
+  <h1>觀無量壽佛經疏上品上生章講記大勢至菩薩念佛圓通章親聞記合刊</h1>
+  <div class="subtitle">ONLINE READING · 電子書自架</div>
+</header>
+
+<div class="book-stage">
+  <div class="book" id="book">
+    <img class="page-img" id="pageImg" alt="書頁">
+    <div class="loading" id="loading">載入中…</div>
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-btn" id="prevBtn">‹ 上一頁</button>
+    <div class="page-indicator">第 <span id="curPage">1</span>/<span id="totalPage">174</span> 頁</div>
+    <button class="nav-btn" id="nextBtn">下一頁 ›</button>
+  </div>
+
+  <div class="jump-row">
+    <span>跳到第</span>
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput">
+    <span>頁</span>
+    <button id="jumpBtn">跳頁</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const IMG_DIR = 'ad10-images/';
+  const TOTAL_PAGES = 174;
+
+  const book = document.getElementById('book');
+  const img = document.getElementById('pageImg');
+  const loading = document.getElementById('loading');
+  const curPageEl = document.getElementById('curPage');
+  const totalPageEl = document.getElementById('totalPage');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const jumpInput = document.getElementById('jumpInput');
+  const jumpBtn = document.getElementById('jumpBtn');
+
+  totalPageEl.textContent = TOTAL_PAGES;
+
+  let current = 1;
+  let isAnimating = false;
+
+  function pad(n){ return String(n).padStart(4,'0'); }
+  function srcFor(n){ return IMG_DIR + pad(n) + '.jpg'; }
+
+  function preload(n){
+    if(n < 1 || n > TOTAL_PAGES) return;
+    const im = new Image();
+    im.src = srcFor(n);
+  }
+
+  function showPage(n){
+    if(n < 1 || n > TOTAL_PAGES) return;
+    current = n;
+    loading.classList.remove('hidden');
+    img.src = srcFor(n);
+    img.onload = function(){ loading.classList.add('hidden'); };
+    img.onerror = function(){ loading.textContent = '圖片載入失敗'; };
+    curPageEl.textContent = n;
+    prevBtn.disabled = (n <= 1);
+    nextBtn.disabled = (n >= TOTAL_PAGES);
+    preload(n+1);
+    preload(n-1);
+  }
+
+  function next(){
+    if(isAnimating || current >= TOTAL_PAGES) return;
+    isAnimating = true;
+    showPage(current+1);
+    setTimeout(function(){ isAnimating = false; }, 300);
+  }
+  function prev(){
+    if(isAnimating || current <= 1) return;
+    isAnimating = true;
+    showPage(current-1);
+    setTimeout(function(){ isAnimating = false; }, 300);
+  }
+
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
+
+  jumpBtn.addEventListener('click', function(){
+    const n = parseInt(jumpInput.value, 10);
+    if(!isNaN(n) && n >= 1 && n <= TOTAL_PAGES){
+      showPage(n);
+    }
+    jumpInput.value = '';
+    jumpInput.blur();
+  });
+  jumpInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ jumpBtn.click(); }
+  });
+
+  // --- 滑動翻頁（含晃動修正）---
+  let touchStartX = 0, touchStartY = 0, touchMoving = false, swipeIntent = false;
+
+  book.addEventListener('touchstart', function(e){
+    if(e.touches.length !== 1) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchMoving = true;
+    swipeIntent = false;
+  }, {passive:true});
+
+  book.addEventListener('touchmove', function(e){
+    if(!touchMoving || e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - touchStartX;
+    const dy = e.touches[0].clientY - touchStartY;
+    if(!swipeIntent && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)){
+      swipeIntent = true;
+    }
+    if(swipeIntent && book.style.touchAction !== 'auto'){
+      e.preventDefault();
+    }
+  }, {passive:false});
+
+  book.addEventListener('touchend', function(e){
+    if(!touchMoving) return;
+    touchMoving = false;
+    if(!swipeIntent) return;
+    const dx = (e.changedTouches[0].clientX - touchStartX);
+    if(Math.abs(dx) > 40){
+      if(dx < 0){ next(); } else { prev(); }
+    }
+  });
+
+  // --- 放大後允許左右平移（雙指縮放修正）---
+  function updateZoomState(){
+    if(!window.visualViewport) return;
+    const zoomedIn = window.visualViewport.scale > 1.02;
+    book.style.touchAction = zoomedIn ? 'auto' : 'pan-y pinch-zoom';
+  }
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', updateZoomState);
+    window.visualViewport.addEventListener('scroll', updateZoomState);
+  }
+
+  // 鍵盤左右鍵（桌面測試方便）
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight') next();
+    if(e.key === 'ArrowLeft') prev();
+  });
+
+  showPage(1);
+})();
+</script>
+
+</body>
+</html>
