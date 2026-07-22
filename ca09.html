@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>五戒誦戒儀軌,受八關齋戒法受十善戒法</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f7f2e8;
+    --pine:#2f5240;
+    --pine-deep:#20372a;
+    --brick:#8a3b2b;
+    --gold:#c8a24a;
+    --ink:#2a2a26;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font-family:'Noto Sans TC',sans-serif;}
+  header{padding:18px 16px 10px;text-align:center;}
+  header a.brand{font-family:'Noto Serif TC',serif;font-weight:700;
+    font-size:15px;color:var(--brick);text-decoration:none;letter-spacing:1px;}
+  h1{font-family:'Noto Serif TC',serif;font-weight:700;font-size:22px;
+    margin:8px 0 4px;color:var(--pine-deep);}
+  .subtitle{font-size:12px;color:#6b6b62;letter-spacing:1px;margin:0 0 10px;}
+
+  .jump-bar{display:flex;justify-content:center;align-items:center;gap:6px;
+    margin-bottom:10px;font-size:13px;}
+  .jump-bar input{width:56px;text-align:center;padding:5px 4px;
+    border:1px solid var(--pine);border-radius:6px;font-size:14px;}
+  .jump-bar button{padding:5px 10px;border:none;border-radius:6px;
+    background:var(--pine);color:#fff;font-size:13px;}
+
+  .book-stage{display:flex;justify-content:center;padding:0 10px;}
+  .book{
+    position:relative;
+    width:min(92vw,420px);
+    aspect-ratio:850/1400;
+    background:var(--pine-deep);
+    border-radius:8px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+    overflow:hidden;
+    touch-action:pan-y pinch-zoom;
+    user-select:none;
+  }
+  .book img{
+    width:100%;height:100%;object-fit:cover;display:block;
+  }
+  .nav-btn{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:40px;height:40px;border-radius:50%;border:none;
+    background:rgba(255,255,255,.85);color:var(--pine-deep);
+    font-size:18px;display:flex;align-items:center;justify-content:center;
+  }
+  .nav-btn.prev{left:8px;}
+  .nav-btn.next{right:8px;}
+
+  .page-indicator{text-align:center;font-size:13px;margin:10px 0 4px;color:#555;}
+  .progress-track{width:min(92vw,420px);height:4px;background:#e2dccb;
+    border-radius:2px;margin:0 auto 20px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--gold);width:0%;}
+
+  footer{text-align:center;font-size:11px;color:#999;padding:14px 0 30px;}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="index.html">法寶園地</a>
+  <h1>五戒誦戒儀軌,受八關齋戒法受十善戒法</h1>
+  <p class="subtitle">ONLINE READING · 電子書自架</p>
+</header>
+
+<div class="jump-bar">
+  <span>跳到第</span>
+  <input id="jumpInput" type="text" inputmode="numeric" pattern="[0-9]*">
+  <span>頁</span>
+  <button id="jumpBtn">跳頁</button>
+</div>
+
+<div class="book-stage">
+  <div class="book" id="book">
+    <img id="pageImg" alt="page">
+    <button class="nav-btn prev" id="prevBtn">‹</button>
+    <button class="nav-btn next" id="nextBtn">›</button>
+  </div>
+</div>
+
+<p class="page-indicator">第 <span id="curPage">1</span> 頁／共 <span id="totalPage">61</span> 頁</p>
+<div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+<footer>香光電子書 · 自架翻頁閱讀</footer>
+
+<script>
+(function(){
+  const IMG_DIR = "ca09-images/";
+  const TOTAL = 61;
+  const HAS_COVER = false;
+  const HAS_BACKCOVER = false;
+  const VIEW_RADIUS = 1;
+
+  const book = document.getElementById('book');
+  const img = document.getElementById('pageImg');
+  const curPageEl = document.getElementById('curPage');
+  const progressFill = document.getElementById('progressFill');
+  const jumpInput = document.getElementById('jumpInput');
+
+  let current = 1;
+  const cache = new Map();
+
+  // 封面固定檔名 0000.jpg、封底固定檔名 9999.jpg，內頁維持原本 0001.jpg 起算，
+  // 這樣加補封面/封底時完全不用重新命名內頁。
+  function srcFor(n){
+    if(HAS_COVER && n === 1) return IMG_DIR + '0000.jpg';
+    if(HAS_BACKCOVER && n === TOTAL) return IMG_DIR + '9999.jpg';
+    const contentIndex = HAS_COVER ? n - 1 : n;
+    const padded = String(contentIndex).padStart(4,'0');
+    return IMG_DIR + padded + '.jpg';
+  }
+
+  function preload(n){
+    if(n < 1 || n > TOTAL || cache.has(n)) return;
+    const im = new Image();
+    im.src = srcFor(n);
+    cache.set(n, im);
+  }
+
+  function updateWindow(){
+    for(let d = -VIEW_RADIUS; d <= VIEW_RADIUS; d++){
+      preload(current + d);
+    }
+  }
+
+  function showPage(n){
+    if(n < 1 || n > TOTAL) return;
+    current = n;
+    img.src = srcFor(n);
+    curPageEl.textContent = n;
+    progressFill.style.width = ((n-1)/(TOTAL-1||1)*100) + '%';
+    updateWindow();
+  }
+
+  let isAnimating = false;
+  function next(){
+    if(isAnimating) return;
+    if(current >= TOTAL) return;
+    isAnimating = true;
+    showPage(current+1);
+    setTimeout(()=>{isAnimating=false;}, 250);
+  }
+  function prev(){
+    if(isAnimating) return;
+    if(current <= 1) return;
+    isAnimating = true;
+    showPage(current-1);
+    setTimeout(()=>{isAnimating=false;}, 250);
+  }
+
+  document.getElementById('nextBtn').addEventListener('click', next);
+  document.getElementById('prevBtn').addEventListener('click', prev);
+  document.getElementById('jumpBtn').addEventListener('click', function(){
+    const n = parseInt(jumpInput.value, 10);
+    if(!isNaN(n)) showPage(n);
+  });
+
+  // swipe handling
+  let startX = 0, startY = 0, tracking = false;
+  book.addEventListener('touchstart', function(e){
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    tracking = true;
+  }, {passive:true});
+  book.addEventListener('touchmove', function(e){
+    if(!tracking) return;
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+    if(Math.abs(dx) > Math.abs(dy)){
+      e.preventDefault();
+    }
+  }, {passive:false});
+  book.addEventListener('touchend', function(e){
+    if(!tracking) return;
+    tracking = false;
+    const dx = e.changedTouches[0].clientX - startX;
+    if(dx < -40) next();
+    else if(dx > 40) prev();
+  });
+
+  // pinch-zoom then pan fix
+  function updateZoomState(){
+    if(!window.visualViewport) return;
+    const zoomedIn = window.visualViewport.scale > 1.02;
+    book.style.touchAction = zoomedIn ? 'auto' : 'pan-y pinch-zoom';
+  }
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', updateZoomState);
+    window.visualViewport.addEventListener('scroll', updateZoomState);
+  }
+
+  showPage(1);
+})();
+</script>
+</body>
+</html>
