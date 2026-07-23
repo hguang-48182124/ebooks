@@ -3,204 +3,170 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<title>五戒誦戒儀軌,受八關齋戒法受十善戒法</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
+<title>五戒誦戒儀軌,受八關齋戒法受十善戒法 · 線上電子書</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
   :root{
-    --paper:#f7f2e8;
-    --pine:#2f5240;
-    --pine-deep:#20372a;
-    --brick:#8a3b2b;
-    --gold:#c8a24a;
-    --ink:#2a2a26;
+    --paper: #EDE7D6; --paper-deep: #E2DAC3; --ink: #2B2A25; --ink-soft: #5C5A4E;
+    --pine: #33473F; --pine-deep: #22322C; --brick: #A85338; --gold: #B8925A;
+    --line: rgba(43,42,37,0.12);
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
-    font-family:'Noto Sans TC',sans-serif;}
-  header{padding:18px 16px 10px;text-align:center;}
-  header a.brand{font-family:'Noto Serif TC',serif;font-weight:700;
-    font-size:15px;color:var(--brick);text-decoration:none;letter-spacing:1px;}
-  h1{font-family:'Noto Serif TC',serif;font-weight:700;font-size:22px;
-    margin:8px 0 4px;color:var(--pine-deep);}
-  .subtitle{font-size:12px;color:#6b6b62;letter-spacing:1px;margin:0 0 10px;}
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; background: var(--paper); font-family: 'Noto Sans TC', sans-serif; color: var(--ink); overflow-x:hidden; }
+  body{ background-image: radial-gradient(circle at 15% 10%, rgba(184,146,90,0.10), transparent 40%), radial-gradient(circle at 85% 90%, rgba(51,71,63,0.08), transparent 45%); }
+  .wrap{ max-width: 880px; margin: 0 auto; padding: 20px 16px 40px; min-height:100vh; display:flex; flex-direction:column; }
+  header{ display:flex; align-items:baseline; justify-content:space-between; padding-bottom:14px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+  .brand{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: 18px; letter-spacing: 0.04em; color: var(--pine-deep); }
+  .brand span{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:300; font-size:10px; letter-spacing:0.2em; color: var(--ink-soft); margin-top:3px; }
+  .title-block{ text-align:center; margin-bottom: 14px; }
+  h1{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: clamp(22px, 5.5vw, 34px); color: var(--pine-deep); line-height:1.3; }
+  .subtitle{ margin-top:6px; font-size:12px; color: var(--ink-soft); letter-spacing:0.03em; }
 
-  .jump-bar{display:flex;justify-content:center;align-items:center;gap:6px;
-    margin-bottom:10px;font-size:13px;}
-  .jump-bar input{width:56px;text-align:center;padding:5px 4px;
-    border:1px solid var(--pine);border-radius:6px;font-size:14px;}
-  .jump-bar button{padding:5px 10px;border:none;border-radius:6px;
-    background:var(--pine);color:#fff;font-size:13px;}
+  /* ---- fast page navigation bar (replaces volume-nav; jump straight to a page) ---- */
+  .jump-bar{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .jump-bar input{ width:64px; text-align:center; font-size:14px; padding:7px 6px; border-radius:6px; border:1px solid var(--line); background:#fff; }
+  .jump-bar button{ font-size:13px; padding:7px 14px; border-radius:6px; border:1px solid var(--pine); background:transparent; color:var(--pine); cursor:pointer; }
+  .jump-bar button:hover{ background: rgba(51,71,63,0.08); }
+  .jump-bar .sep{ font-size:12px; color:var(--ink-soft); }
 
-  .book-stage{display:flex;justify-content:center;padding:0 10px;}
-  .book{
-    position:relative;
-    width:min(92vw,420px);
-    aspect-ratio:850/1400;
-    background:var(--pine-deep);
-    border-radius:8px;
-    box-shadow:0 10px 30px rgba(0,0,0,.35);
-    overflow:hidden;
-    touch-action:pan-y pinch-zoom;
-    user-select:none;
-  }
-  .book img{
-    width:100%;height:100%;object-fit:cover;display:block;
-  }
-  .nav-btn{
-    position:absolute;top:50%;transform:translateY(-50%);
-    width:40px;height:40px;border-radius:50%;border:none;
-    background:rgba(255,255,255,.85);color:var(--pine-deep);
-    font-size:18px;display:flex;align-items:center;justify-content:center;
-  }
-  .nav-btn.prev{left:8px;}
-  .nav-btn.next{right:8px;}
-
-  .page-indicator{text-align:center;font-size:13px;margin:10px 0 4px;color:#555;}
-  .progress-track{width:min(92vw,420px);height:4px;background:#e2dccb;
-    border-radius:2px;margin:0 auto 20px;overflow:hidden;}
-  .progress-fill{height:100%;background:var(--gold);width:0%;}
-
-  footer{text-align:center;font-size:11px;color:#999;padding:14px 0 30px;}
+  .book-stage{ position:relative; display:flex; justify-content:center; align-items:center; margin: 0 auto 12px; width:100%; }
+  .book{ position:relative; width: min(84vw, 420px); aspect-ratio: 612.00 / 792.00; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y pinch-zoom; -webkit-user-select:none; user-select:none; }
+  .book img{ width:100%; height:100%; display:block; object-fit: cover; opacity:0; transition: opacity 0.15s ease; }
+  .book img.ready{ opacity:1; }
+  .book .spinner{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(237,231,214,0.5); font-size:12px; letter-spacing:0.1em; }
+  .nav-btn{ position:absolute; top:50%; transform: translateY(-50%); width:42px; height:42px; border-radius:50%; border:none; background: rgba(255,255,255,0.85); color: var(--pine-deep); font-size:18px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 14px rgba(43,42,37,0.18); z-index:5; }
+  .nav-btn:disabled{ opacity:0.25; cursor:default; }
+  .nav-prev{ left: -6px; } .nav-next{ right: -6px; }
+  @media (min-width: 640px){ .nav-prev{ left: -54px; } .nav-next{ right: -54px; } }
+  .page-indicator{ text-align:center; font-size:12px; color: var(--ink-soft); letter-spacing:0.1em; margin-bottom:6px; }
+  .page-indicator b{ color: var(--pine-deep); }
+  .progress-track{ width: min(84vw, 420px); height:2px; background: var(--line); margin: 0 auto 30px; border-radius:2px; overflow:hidden; }
+  .progress-fill{ height:100%; background: var(--brick); transition: width 0.15s ease; }
+  .hint{ text-align:center; font-size:11px; color: var(--ink-soft); letter-spacing:0.05em; margin-bottom: 30px; }
+  footer{ text-align:center; margin-top: 20px; padding-top:16px; border-top: 1px solid var(--line); font-size:11px; color: var(--ink-soft); letter-spacing:0.05em; }
 </style>
 </head>
 <body>
-
-<header>
-  <a class="brand" href="index.html">法寶園地</a>
-  <h1>五戒誦戒儀軌,受八關齋戒法受十善戒法</h1>
-  <p class="subtitle">ONLINE READING · 電子書自架</p>
-</header>
-
-<div class="jump-bar">
-  <span>跳到第</span>
-  <input id="jumpInput" type="text" inputmode="numeric" pattern="[0-9]*">
-  <span>頁</span>
-  <button id="jumpBtn">跳頁</button>
-</div>
-
-<div class="book-stage">
-  <div class="book" id="book">
-    <img id="pageImg" alt="page">
-    <button class="nav-btn prev" id="prevBtn">‹</button>
-    <button class="nav-btn next" id="nextBtn">›</button>
+<div class="wrap">
+  <header>
+    <div class="brand"><a href="index.html" style="color:inherit; text-decoration:none;">← 法寶園地</a><span>ONLINE READING · 電子書自架</span></div>
+  </header>
+  <div class="title-block">
+    <h1>五戒誦戒儀軌,受八關齋戒法受十善戒法</h1>
+    <div class="subtitle">香光淨宗學會 · 全書 61 頁</div>
   </div>
+  <div class="jump-bar">
+    <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput" placeholder="頁碼" autocomplete="off">
+    <button id="jumpBtn">跳到該頁</button>
+    <span class="sep">共 61 頁</span>
+  </div>
+  <div class="book-stage">
+    <button class="nav-btn nav-prev" id="prevBtn" aria-label="上一頁">‹</button>
+    <div class="book" id="book">
+      <div class="spinner" id="spinner">載入中…</div>
+      <img id="pageImg" alt="">
+    </div>
+    <button class="nav-btn nav-next" id="nextBtn" aria-label="下一頁">›</button>
+  </div>
+  <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">61</span> 頁</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="hint">點左右箭頭、滑動，或按鍵盤方向鍵翻頁；也可以直接輸入頁碼跳頁</div>
+<footer>香光淨宗學會 · 法寶園地電子書 &nbsp;|&nbsp; 本頁面自行架設，取代原付費平台</footer>
 </div>
-
-<p class="page-indicator">第 <span id="curPage">1</span> 頁／共 <span id="totalPage">61</span> 頁</p>
-<div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-
-<footer>香光電子書 · 自架翻頁閱讀</footer>
-
 <script>
-(function(){
-  const IMG_DIR = "ca09-images/";
-  const TOTAL = 61;
-  const HAS_COVER = false;
-  const HAS_BACKCOVER = false;
-  const VIEW_RADIUS = 1;
+const TOTAL = 61;
+const IMG_DIR = 'ca09-images/';
+const HAS_COVER = false;
+const HAS_BACKCOVER = false;
+// 封面固定檔名 0000.jpg、封底固定檔名 9999.jpg，內頁維持原本 0001.jpg 起算，
+// 這樣加補封面/封底時完全不用重新命名內頁。沒有封面/封底時（HAS_COVER 和
+// HAS_BACKCOVER 都是 false）跟原本 ac04 的行為完全一樣。
+function srcFor(n){
+  if(HAS_COVER && n === 1) return IMG_DIR + '0000.jpg';
+  if(HAS_BACKCOVER && n === TOTAL) return IMG_DIR + '9999.jpg';
+  const contentIndex = HAS_COVER ? n - 1 : n;
+  return IMG_DIR + String(contentIndex).padStart(4,'0') + '.jpg';
+}
 
-  const book = document.getElementById('book');
-  const img = document.getElementById('pageImg');
-  const curPageEl = document.getElementById('curPage');
-  const progressFill = document.getElementById('progressFill');
-  const jumpInput = document.getElementById('jumpInput');
+let current = 1; // 1-indexed, matches printed filenames / page-jump input
+const pageImg = document.getElementById('pageImg');
+const spinner = document.getElementById('spinner');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const curPageEl = document.getElementById('curPage');
+const progressFill = document.getElementById('progressFill');
+const jumpInput = document.getElementById('jumpInput');
+const jumpBtn = document.getElementById('jumpBtn');
 
-  let current = 1;
-  const cache = new Map();
-
-  // 封面固定檔名 0000.jpg、封底固定檔名 9999.jpg，內頁維持原本 0001.jpg 起算，
-  // 這樣加補封面/封底時完全不用重新命名內頁。
-  function srcFor(n){
-    if(HAS_COVER && n === 1) return IMG_DIR + '0000.jpg';
-    if(HAS_BACKCOVER && n === TOTAL) return IMG_DIR + '9999.jpg';
-    const contentIndex = HAS_COVER ? n - 1 : n;
-    const padded = String(contentIndex).padStart(4,'0');
-    return IMG_DIR + padded + '.jpg';
-  }
-
-  function preload(n){
-    if(n < 1 || n > TOTAL || cache.has(n)) return;
+const cache = new Map();
+function preload(n){
+  if(n < 1 || n > TOTAL || cache.has(n)) return;
+  const im = new Image();
+  im.src = srcFor(n);
+  cache.set(n, im);
+}
+function showPage(n, push){
+  current = Math.min(Math.max(n,1), TOTAL);
+  pageImg.classList.remove('ready');
+  spinner.style.display = 'flex';
+  const target = srcFor(current);
+  const cached = cache.get(current);
+  const finish = () => {
+    pageImg.src = target;
+    pageImg.classList.add('ready');
+    spinner.style.display = 'none';
+  };
+  if(cached && cached.complete){ finish(); }
+  else {
     const im = new Image();
-    im.src = srcFor(n);
-    cache.set(n, im);
+    im.onload = finish;
+    im.src = target;
+    cache.set(current, im);
   }
+  curPageEl.textContent = current;
+  progressFill.style.width = ((current-1) / (TOTAL-1) * 100) + '%';
+  prevBtn.disabled = current <= 1;
+  nextBtn.disabled = current >= TOTAL;
+  preload(current+1); preload(current+2); preload(current-1);
+}
+function next(){ if(current < TOTAL) showPage(current+1); }
+function prev(){ if(current > 1) showPage(current-1); }
 
-  function updateWindow(){
-    for(let d = -VIEW_RADIUS; d <= VIEW_RADIUS; d++){
-      preload(current + d);
-    }
+nextBtn.addEventListener('click', next);
+prevBtn.addEventListener('click', prev);
+document.addEventListener('keydown', (e) => { if(e.key === 'ArrowRight') next(); if(e.key === 'ArrowLeft') prev(); });
+jumpBtn.addEventListener('click', () => {
+  const n = parseInt(jumpInput.value, 10);
+  if(!isNaN(n)) showPage(n);
+});
+jumpInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') jumpBtn.click(); });
+
+let touchStartX = null, touchStartY = null;
+const book = document.getElementById('book');
+book.addEventListener('touchstart', (e) => {
+  touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
+}, { passive: true });
+book.addEventListener('touchend', (e) => {
+  if(touchStartX === null) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if(Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)){
+    if(dx < 0) next(); else prev();
   }
+  touchStartX = null; touchStartY = null;
+});
 
-  function showPage(n){
-    if(n < 1 || n > TOTAL) return;
-    current = n;
-    img.src = srcFor(n);
-    curPageEl.textContent = n;
-    progressFill.style.width = ((n-1)/(TOTAL-1||1)*100) + '%';
-    updateWindow();
-  }
+function updateZoomState(){
+  if(!window.visualViewport) return;
+  const zoomedIn = window.visualViewport.scale > 1.02;
+  book.style.touchAction = zoomedIn ? 'auto' : 'pan-y pinch-zoom';
+}
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', updateZoomState);
+  window.visualViewport.addEventListener('scroll', updateZoomState);
+}
 
-  let isAnimating = false;
-  function next(){
-    if(isAnimating) return;
-    if(current >= TOTAL) return;
-    isAnimating = true;
-    showPage(current+1);
-    setTimeout(()=>{isAnimating=false;}, 250);
-  }
-  function prev(){
-    if(isAnimating) return;
-    if(current <= 1) return;
-    isAnimating = true;
-    showPage(current-1);
-    setTimeout(()=>{isAnimating=false;}, 250);
-  }
-
-  document.getElementById('nextBtn').addEventListener('click', next);
-  document.getElementById('prevBtn').addEventListener('click', prev);
-  document.getElementById('jumpBtn').addEventListener('click', function(){
-    const n = parseInt(jumpInput.value, 10);
-    if(!isNaN(n)) showPage(n);
-  });
-
-  // swipe handling
-  let startX = 0, startY = 0, tracking = false;
-  book.addEventListener('touchstart', function(e){
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    tracking = true;
-  }, {passive:true});
-  book.addEventListener('touchmove', function(e){
-    if(!tracking) return;
-    const dx = e.touches[0].clientX - startX;
-    const dy = e.touches[0].clientY - startY;
-    if(Math.abs(dx) > Math.abs(dy)){
-      e.preventDefault();
-    }
-  }, {passive:false});
-  book.addEventListener('touchend', function(e){
-    if(!tracking) return;
-    tracking = false;
-    const dx = e.changedTouches[0].clientX - startX;
-    if(dx < -40) next();
-    else if(dx > 40) prev();
-  });
-
-  // pinch-zoom then pan fix
-  function updateZoomState(){
-    if(!window.visualViewport) return;
-    const zoomedIn = window.visualViewport.scale > 1.02;
-    book.style.touchAction = zoomedIn ? 'auto' : 'pan-y pinch-zoom';
-  }
-  if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', updateZoomState);
-    window.visualViewport.addEventListener('scroll', updateZoomState);
-  }
-
-  showPage(1);
-})();
+showPage(1);
 </script>
 </body>
 </html>
