@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>護持資訊 · 法寶園地</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+  :root{
+    --ink: #232323;
+    --paper: #F6F2E9;
+    --paper-deep: #EDE6D6;
+    --indigo: #1E3A5F;
+    --indigo-deep: #14273F;
+    --gold: #B8935A;
+    --gold-soft: #E4D3B0;
+    --line: rgba(30,58,95,0.18);
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--paper);
+    background-image:
+      radial-gradient(ellipse at 15% 0%, rgba(30,58,95,0.05), transparent 55%),
+      radial-gradient(ellipse at 90% 100%, rgba(184,147,90,0.08), transparent 50%);
+    font-family: 'Noto Sans TC', sans-serif;
+    color: var(--ink);
+    padding: 40px 16px 80px;
+    min-height: 100vh;
+  }
+
+  .wrap{ max-width: 620px; margin: 0 auto; }
+
+  .brand{
+    display:flex; align-items:center; gap:14px;
+    margin-bottom: 28px;
+  }
+  .brand-mark{
+    width:46px; height:46px; border-radius:50%;
+    border:1.5px solid var(--indigo);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Noto Serif TC'; font-weight:900; color:var(--indigo);
+    font-size:13px; flex-shrink:0;
+  }
+  .brand-name{
+    font-family:'Noto Serif TC'; font-weight:700;
+    font-size: 19px; color: var(--indigo-deep);
+    letter-spacing: 0.04em;
+  }
+  .brand-sub{
+    font-size:12px; color:var(--gold); letter-spacing:0.15em; margin-top:2px;
+  }
+
+  .hero{
+    position:relative;
+    background: linear-gradient(165deg, var(--paper-deep), var(--paper) 70%);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 46px 32px 40px;
+    text-align:center;
+    overflow:hidden;
+    margin-bottom: 26px;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      linear-gradient(90deg, transparent 49.4%, var(--gold-soft) 49.4%, var(--gold-soft) 50.6%, transparent 50.6%);
+    opacity:0.35;
+    mask-image: radial-gradient(circle at 50% 30%, black, transparent 70%);
+  }
+  .hero-title{
+    position:relative;
+    font-family:'Noto Serif TC'; font-weight:900;
+    font-size: clamp(30px, 6vw, 42px);
+    color: var(--indigo-deep);
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    margin: 0 0 10px;
+  }
+  .hero-desc{
+    position:relative;
+    font-size: 13.5px; color:#5b5348; line-height:1.9;
+    max-width: 420px; margin: 0 auto;
+  }
+
+  .card{
+    background: #FEFCF6;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 30px 26px 26px;
+    margin-bottom: 18px;
+  }
+  .card-title{
+    font-family:'Noto Serif TC'; font-weight:700;
+    font-size: 19px; color: var(--indigo-deep);
+    margin: 0 0 4px;
+  }
+  .card-title .req{
+    font-size:11px; font-weight:500; color:#fff; background:#A8483B;
+    padding: 2px 8px; border-radius:2px; margin-left:8px; vertical-align:2px;
+    letter-spacing:0.05em;
+  }
+  .card-hint{ font-size:12px; color:#9a8e77; margin: 0 0 18px; }
+
+  .radio-row{
+    display:flex; align-items:flex-start; gap:10px;
+    padding: 13px 4px; border-bottom: 1px dashed var(--line);
+    cursor:pointer; font-size:14.5px;
+  }
+  .radio-row:last-child{ border-bottom:none; }
+  .radio-row input{ margin-top:3px; accent-color: var(--indigo); width:16px; height:16px; }
+  .radio-row span{ line-height:1.5; }
+  .radio-row .org-en{ display:block; font-size:11.5px; color:#a39680; margin-top:2px; }
+
+  .item{
+    padding: 15px 0; border-bottom: 1px dashed var(--line);
+  }
+  .item:last-child{ border-bottom:none; }
+  .item-head{
+    display:flex; align-items:center; gap:10px; cursor:pointer; font-size:14.5px;
+  }
+  .item-head input{ accent-color: var(--indigo); width:16px; height:16px; }
+  .amount-row{
+    margin: 10px 0 0 26px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .amount-row input[type=number]{
+    width: 130px; padding: 8px 10px;
+    border:1px solid var(--line); border-radius:3px;
+    font-size:14px; background:#fff; color:var(--ink);
+    font-family:'Noto Sans TC';
+  }
+  .amount-row input[type=number]:disabled{ background:#f1ede3; color:#bbb; }
+  .amount-row .unit{ font-size:13px; color:#8a7f6a; }
+
+  .total{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding: 18px 26px; background: var(--indigo-deep); border-radius:4px;
+    color: var(--paper); margin-bottom: 20px;
+  }
+  .total .label{ font-size:13px; letter-spacing:0.1em; color: var(--gold-soft); }
+  .total .value{ font-family:'Noto Serif TC'; font-weight:700; font-size:26px; }
+  .total .value span{ font-size:14px; font-weight:400; margin-right:3px; }
+
+  .actions{
+    display:flex; gap:12px; flex-wrap:wrap;
+  }
+  .btn{
+    flex:1; min-width:150px;
+    padding: 15px 18px; text-align:center;
+    border-radius:3px; font-size:15px; font-weight:700;
+    letter-spacing:0.08em; cursor:pointer; border:none;
+    font-family:'Noto Sans TC';
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{ transform: translateY(-1px); }
+  .btn-primary{ background: var(--indigo-deep); color:#fff; }
+  .btn-primary:hover{ box-shadow: 0 6px 16px rgba(20,39,63,0.3); }
+  .btn-outline{ background:transparent; border:1.5px solid var(--indigo-deep); color:var(--indigo-deep); }
+
+  .foot{
+    margin-top: 30px; text-align:center; font-size:11.5px; color:#a39680; line-height:1.8;
+  }
+
+  .modal-backdrop{
+    display:none; position:fixed; inset:0; background:rgba(20,39,63,0.55);
+    align-items:center; justify-content:center; padding:20px; z-index:10;
+  }
+  .modal-backdrop.show{ display:flex; }
+  .modal{
+    background:#FEFCF6; border-radius:4px; max-width:420px; width:100%;
+    padding: 28px 26px; text-align:left;
+  }
+  .modal h3{ font-family:'Noto Serif TC'; color:var(--indigo-deep); margin:0 0 14px; }
+  .modal p{ font-size:13.5px; line-height:1.9; color:#4a453a; margin:6px 0; }
+  .modal .close-btn{
+    margin-top:16px; width:100%; padding:11px; background:var(--indigo-deep);
+    color:#fff; border:none; border-radius:3px; font-size:14px; cursor:pointer;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <div class="brand-mark">香光</div>
+    <div>
+      <div class="brand-name">香光淨宗學會 · 法寶園地</div>
+      <div class="brand-sub">DHARMA TREASURE ONLINE</div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <p class="hero-title">法 施 無 盡</p>
+    <p class="hero-desc">
+      每一次護持，都是讓經典與講經音聲得以持續流通、利益更多有緣人的助緣。
+      感恩您的發心，一同成就法寶園地的長久住世。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3 class="card-title">護持單位 <span class="req">必填</span></h3>
+    <label class="radio-row">
+      <input type="radio" name="org" checked>
+      <span>香光淨宗學會<span class="org-en">Xiangguang Pure Land Association</span></span>
+    </label>
+  </div>
+
+  <div class="card">
+    <h3 class="card-title">護持項目 <span class="req">必填</span></h3>
+    <p class="card-hint">可複選，金額以新台幣計算</p>
+
+    <div class="item">
+      <label class="item-head">
+        <input type="checkbox" class="item-check" data-target="amt1">
+        <span>護持法寶園地電子書平台</span>
+      </label>
+      <div class="amount-row">
+        <input type="number" id="amt1" placeholder="0" disabled min="0">
+        <span class="unit">元</span>
+      </div>
+    </div>
+
+    <div class="item">
+      <label class="item-head">
+        <input type="checkbox" class="item-check" data-target="amt2">
+        <span>助印經書（含印製及運費）</span>
+      </label>
+      <div class="amount-row">
+        <input type="number" id="amt2" placeholder="0" disabled min="0">
+        <span class="unit">元</span>
+      </div>
+    </div>
+
+    <div class="item">
+      <label class="item-head">
+        <input type="checkbox" class="item-check" data-target="amt3">
+        <span>講經字幕整理與校對</span>
+      </label>
+      <div class="amount-row">
+        <input type="number" id="amt3" placeholder="0" disabled min="0">
+        <span class="unit">元</span>
+      </div>
+    </div>
+
+    <div class="item">
+      <label class="item-head">
+        <input type="checkbox" class="item-check" data-target="amt4">
+        <span>一般護持（不指定用途）</span>
+      </label>
+      <div class="amount-row">
+        <input type="number" id="amt4" placeholder="0" disabled min="0">
+        <span class="unit">元</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="total">
+    <span class="label">護持總額</span>
+    <span class="value"><span>NT$</span><span id="totalVal">0</span></span>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="onlineBtn">線上捐款</button>
+    <button class="btn btn-outline" id="otherBtn">其他捐款方式</button>
+  </div>
+
+  <p class="foot">
+    社團法人香光淨宗學會　·　本頁為表單設計示意稿，「線上捐款」尚未串接金流<br>
+    如需捐款收據，請於完成護持後與本會聯繫
+  </p>
+</div>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <h3>其他捐款方式</h3>
+    <p>戶名：社團法人香光淨宗學會</p>
+    <p>銀行：＿＿銀行＿＿分行（代號＿＿＿）</p>
+    <p>帳號：＿＿＿＿＿＿＿＿＿＿＿＿</p>
+    <p style="color:#a39680; font-size:12px;">＊此為示意欄位，正式上線前請填入貴會實際帳戶資訊</p>
+    <button class="close-btn" id="closeModal">關閉</button>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.item-check').forEach(chk => {
+    chk.addEventListener('change', () => {
+      const target = document.getElementById(chk.dataset.target);
+      target.disabled = !chk.checked;
+      if (!chk.checked) target.value = '';
+      updateTotal();
+    });
+  });
+  document.querySelectorAll('.amount-row input[type=number]').forEach(inp => {
+    inp.addEventListener('input', updateTotal);
+  });
+  function updateTotal(){
+    let total = 0;
+    document.querySelectorAll('.amount-row input[type=number]').forEach(inp => {
+      total += Number(inp.value) || 0;
+    });
+    document.getElementById('totalVal').textContent = total.toLocaleString('zh-Hant-TW');
+  }
+
+  document.getElementById('onlineBtn').addEventListener('click', () => {
+    alert('這裡未來會導向貴會選定的金流平台付款頁面（例如綠界/藍新的捐款連結，或台灣Pay掃碼頁）。\n目前為表單設計示意，尚未串接。');
+  });
+  document.getElementById('otherBtn').addEventListener('click', () => {
+    document.getElementById('modal').classList.add('show');
+  });
+  document.getElementById('closeModal').addEventListener('click', () => {
+    document.getElementById('modal').classList.remove('show');
+  });
+</script>
+</body>
+</html>
