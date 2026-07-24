@@ -72,23 +72,15 @@
     </div>
     <button class="nav-btn nav-next" id="nextBtn" aria-label="下一頁">›</button>
   </div>
-  <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">737</span> 頁</div>
+  <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">736</span> 頁</div>
   <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
   <div class="hint">點左右箭頭、滑動，或按鍵盤方向鍵翻頁；也可以直接輸入頁碼跳頁</div>
 <footer>香光淨宗學會 · 法寶園地電子書 &nbsp;|&nbsp; 本頁面自行架設，取代原付費平台</footer>
 </div>
 <script>
-const TOTAL = 737;
-  const HAS_COVER = false;
-  const HAS_BACKCOVER = true;
+const TOTAL = 736;
 const IMG_DIR = 'ac06-images/';
-function srcFor(n){
-    if(HAS_COVER && n === 1) return IMG_DIR + '0000.jpg';
-    if(HAS_BACKCOVER && n === TOTAL) return IMG_DIR + '9999.jpg';
-    const contentIndex = HAS_COVER ? n - 1 : n;
-    const padded = String(contentIndex).padStart(4,'0');
-    return IMG_DIR + padded + '.jpg';
-  }
+function srcFor(n){ return IMG_DIR + String(n).padStart(4,'0') + '.jpg'; }
 
 let current = 1; // 1-indexed, matches printed filenames / page-jump input
 const pageImg = document.getElementById('pageImg');
