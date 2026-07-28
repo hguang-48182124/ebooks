@@ -14,7 +14,7 @@
   *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ height:100%; background: var(--paper); font-family: 'Noto Sans TC', sans-serif; color: var(--ink); overflow-x:hidden; }
   body{ background-image: radial-gradient(circle at 15% 10%, rgba(184,146,90,0.10), transparent 40%), radial-gradient(circle at 85% 90%, rgba(51,71,63,0.08), transparent 45%); }
-  .wrap{ max-width: 880px; margin: 0 auto; padding: 20px 16px 40px; min-height:100vh; display:flex; flex-direction:column; }
+  .wrap{ max-width: 960px; margin: 0 auto; padding: 20px 16px 40px; min-height:100vh; display:flex; flex-direction:column; }
   header{ display:flex; align-items:baseline; justify-content:space-between; padding-bottom:14px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
   .brand{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: 18px; letter-spacing: 0.04em; color: var(--pine-deep); }
   .brand span{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:300; font-size:10px; letter-spacing:0.2em; color: var(--ink-soft); margin-top:3px; }
@@ -22,23 +22,27 @@
   h1{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: clamp(22px, 5.5vw, 34px); color: var(--pine-deep); line-height:1.3; }
   .subtitle{ margin-top:6px; font-size:12px; color: var(--ink-soft); letter-spacing:0.03em; }
 
-  /* ---- fast page navigation bar (replaces volume-nav; jump straight to a page) ---- */
   .jump-bar{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
   .jump-bar input{ width:64px; text-align:center; font-size:14px; padding:7px 6px; border-radius:6px; border:1px solid var(--line); background:#fff; }
   .jump-bar button{ font-size:13px; padding:7px 14px; border-radius:6px; border:1px solid var(--pine); background:transparent; color:var(--pine); cursor:pointer; }
   .jump-bar button:hover{ background: rgba(51,71,63,0.08); }
   .jump-bar .sep{ font-size:12px; color:var(--ink-soft); }
+  #modeToggle{ border-color: var(--gold); background: rgba(184,146,90,0.12); color: var(--brick); display:none; }
+  #modeToggle:hover{ background: rgba(184,146,90,0.22); }
 
   .book-stage{ position:relative; display:flex; justify-content:center; align-items:center; margin: 0 auto 12px; width:100%; }
-  .book{ position:relative; width: min(84vw, 420px); aspect-ratio: 408 / 596.4; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y pinch-zoom; -webkit-user-select:none; user-select:none; }
-  /* single <img>, we just swap its src — no per-page DOM, no 3D transform stack.
-     This is the whole fix for the slowness/shake: earlier versions kept every
-     page (or every page in a whole 90-150 page volume) as a stacked, rotated
-     DOM node; here there is only ever ONE image element in the book at a time. */
-  .book img{ width:100%; height:100%; display:block; object-fit: cover; opacity:0; transition: opacity 0.15s ease; }
-  .book img.ready{ opacity:1; }
-  .book .spinner{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(237,231,214,0.5); font-size:12px; letter-spacing:0.1em; }
-  .nav-btn{ position:absolute; top:50%; transform: translateY(-50%); width:42px; height:42px; border-radius:50%; border:none; background: rgba(255,255,255,0.85); color: var(--pine-deep); font-size:18px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 14px rgba(43,42,37,0.18); }
+  /* .book-frame holds one or two page-slots. Single mode = one slot, full width.
+     Dual mode = two slots side by side, no gap, so a split spread-chart page
+     rejoins visually into one continuous image. */
+  .book-frame{ position:relative; display:flex; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y pinch-zoom; -webkit-user-select:none; user-select:none; }
+  .book-frame.single{ width: min(84vw, 420px); aspect-ratio: 408 / 596.4; }
+  .book-frame.dual{ width: min(92vw, 840px); aspect-ratio: 816 / 596.4; }
+  .page-slot{ position:relative; flex: 1 1 50%; height:100%; overflow:hidden; background: var(--pine-deep); }
+  .page-slot.blank{ background: var(--paper); }
+  .page-slot img{ width:100%; height:100%; display:block; object-fit: cover; opacity:0; transition: opacity 0.15s ease; }
+  .page-slot img.ready{ opacity:1; }
+  .book-frame .spinner{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(237,231,214,0.5); font-size:12px; letter-spacing:0.1em; z-index:2; pointer-events:none; }
+  .nav-btn{ position:absolute; top:50%; transform: translateY(-50%); width:42px; height:42px; border-radius:50%; border:none; background: rgba(255,255,255,0.85); color: var(--pine-deep); font-size:18px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 14px rgba(43,42,37,0.18); z-index:3; }
   .nav-btn:disabled{ opacity:0.25; cursor:default; }
   .nav-prev{ left: -6px; } .nav-next{ right: -6px; }
   @media (min-width: 640px){ .nav-prev{ left: -54px; } .nav-next{ right: -54px; } }
@@ -63,12 +67,14 @@
     <input type="number" id="jumpInput" min="1" max="630" placeholder="頁碼">
     <button id="jumpBtn">跳到該頁</button>
     <span class="sep">共 630 頁</span>
+    <button id="modeToggle">切換為雙頁</button>
   </div>
   <div class="book-stage">
     <button class="nav-btn nav-prev" id="prevBtn" aria-label="上一頁">‹</button>
-    <div class="book" id="book">
+    <div class="book-frame single" id="bookFrame">
       <div class="spinner" id="spinner">載入中…</div>
-      <img id="pageImg" alt="">
+      <div class="page-slot" id="slotLeft"><img id="pageImgL" alt=""></div>
+      <div class="page-slot" id="slotRight" style="display:none;"><img id="pageImgR" alt=""></div>
     </div>
     <button class="nav-btn nav-next" id="nextBtn" aria-label="下一頁">›</button>
   </div>
@@ -80,72 +86,176 @@
 <script>
 const TOTAL = 630;
 const IMG_DIR = 'aa01-images/';
+const HAS_COVER = false;      // true if this book has a dedicated 0000.jpg cover
+const HAS_BACKCOVER = false;  // true if this book has a dedicated 9999.jpg backcover
 function srcFor(n){ return IMG_DIR + String(n).padStart(4,'0') + '.jpg'; }
 
-let current = 1; // 1-indexed, matches printed filenames / page-jump input
-const pageImg = document.getElementById('pageImg');
+// ---- Build the dual-page spread map -------------------------------------
+// Rule: page 1 is always its own standalone spread (cover-independent /
+// recto-page convention, whether or not HAS_COVER is set). If HAS_BACKCOVER
+// is set, the last page is also standalone. Everything between pairs up
+// left/right in reading order; if that interior run has an odd count, a
+// virtual blank page is appended at the end so pairs always line up evenly
+// (keeps any split spread-chart pages correctly phase-aligned).
+function buildSpreads(){
+  const spreads = [{ type:'single', page: 1 }];
+  const interiorEnd = TOTAL - (HAS_BACKCOVER ? 1 : 0);
+  const interior = [];
+  for(let p = 2; p <= interiorEnd; p++) interior.push(p);
+  if(interior.length % 2 === 1) interior.push(null); // virtual blank
+  for(let i = 0; i < interior.length; i += 2){
+    spreads.push({ type:'pair', left: interior[i], right: interior[i+1] });
+  }
+  if(HAS_BACKCOVER) spreads.push({ type:'single', page: TOTAL });
+  return spreads;
+}
+const SPREADS = buildSpreads();
+function spreadIndexForPage(page){
+  for(let i = 0; i < SPREADS.length; i++){
+    const s = SPREADS[i];
+    if(s.type === 'single' && s.page === page) return i;
+    if(s.type === 'pair' && (s.left === page || s.right === page)) return i;
+  }
+  return 0;
+}
+
+let current = 1;    // authoritative page number
+let mode = 'dual';  // 'single' | 'dual' — actual current render mode
+let userChoseMode = false;
+const mq = window.matchMedia('(min-width: 900px)');
+
+const bookFrame = document.getElementById('bookFrame');
 const spinner = document.getElementById('spinner');
+const slotLeft = document.getElementById('slotLeft');
+const slotRight = document.getElementById('slotRight');
+const pageImgL = document.getElementById('pageImgL');
+const pageImgR = document.getElementById('pageImgR');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 const curPageEl = document.getElementById('curPage');
+const totalPageEl = document.getElementById('totalPage');
 const progressFill = document.getElementById('progressFill');
 const jumpInput = document.getElementById('jumpInput');
 const jumpBtn = document.getElementById('jumpBtn');
+const modeToggle = document.getElementById('modeToggle');
 
-// Preload cache: a handful of Image() objects around the current page so
-// tapping next/prev is instant even though nothing is embedded up front.
+// Preload cache: a handful of Image() objects around the current position
+// so tapping next/prev is instant even though nothing is embedded up front.
 const cache = new Map();
-function preload(n){
-  if(n < 1 || n > TOTAL || cache.has(n)) return;
+function preloadPage(n){
+  if(n == null || n < 1 || n > TOTAL || cache.has(n)) return;
   const im = new Image();
   im.src = srcFor(n);
   cache.set(n, im);
 }
-function showPage(n, push){
-  current = Math.min(Math.max(n,1), TOTAL);
-  pageImg.classList.remove('ready');
-  spinner.style.display = 'flex';
-  const target = srcFor(current);
-  const cached = cache.get(current);
-  const finish = () => {
-    pageImg.src = target;
-    pageImg.classList.add('ready');
-    spinner.style.display = 'none';
-  };
+function loadInto(imgEl, page){
+  const slot = imgEl.parentElement;
+  if(page == null){
+    slot.classList.add('blank');
+    imgEl.classList.remove('ready');
+    imgEl.removeAttribute('src');
+    return;
+  }
+  slot.classList.remove('blank');
+  const target = srcFor(page);
+  const cached = cache.get(page);
+  const finish = () => { imgEl.src = target; imgEl.classList.add('ready'); };
   if(cached && cached.complete){ finish(); }
   else {
+    imgEl.classList.remove('ready');
     const im = new Image();
     im.onload = finish;
     im.src = target;
-    cache.set(current, im);
+    cache.set(page, im);
   }
-  curPageEl.textContent = current;
-  progressFill.style.width = ((current-1) / (TOTAL-1) * 100) + '%';
-  prevBtn.disabled = current <= 1;
-  nextBtn.disabled = current >= TOTAL;
-  // warm the next couple of pages in both directions so the swipe/tap feels instant
-  preload(current+1); preload(current+2); preload(current-1);
 }
-function next(){ if(current < TOTAL) showPage(current+1); }
-function prev(){ if(current > 1) showPage(current-1); }
+
+function render(){
+  totalPageEl.textContent = TOTAL;
+  progressFill.style.width = ((current - 1) / (TOTAL - 1) * 100) + '%';
+  if(mode === 'single'){
+    bookFrame.classList.add('single'); bookFrame.classList.remove('dual');
+    slotRight.style.display = 'none';
+    loadInto(pageImgL, current);
+    curPageEl.textContent = current;
+    prevBtn.disabled = current <= 1;
+    nextBtn.disabled = current >= TOTAL;
+    preloadPage(current + 1); preloadPage(current + 2); preloadPage(current - 1);
+  } else {
+    bookFrame.classList.add('dual'); bookFrame.classList.remove('single');
+    const idx = spreadIndexForPage(current);
+    const s = SPREADS[idx];
+    if(s.type === 'single'){
+      slotRight.style.display = 'none';
+      loadInto(pageImgL, s.page);
+      curPageEl.textContent = s.page;
+    } else {
+      slotRight.style.display = '';
+      loadInto(pageImgL, s.left);
+      loadInto(pageImgR, s.right);
+      curPageEl.textContent = s.right ? (s.left + '–' + s.right) : String(s.left);
+    }
+    prevBtn.disabled = idx <= 0;
+    nextBtn.disabled = idx >= SPREADS.length - 1;
+    const around = [SPREADS[idx + 1], SPREADS[idx - 1]];
+    around.forEach(sp => { if(!sp) return; preloadPage(sp.page); preloadPage(sp.left); preloadPage(sp.right); });
+  }
+}
+
+function goToPage(n){
+  current = Math.min(Math.max(n, 1), TOTAL);
+  render();
+}
+function next(){
+  if(mode === 'single'){ if(current < TOTAL) goToPage(current + 1); return; }
+  const idx = spreadIndexForPage(current);
+  if(idx < SPREADS.length - 1){ const s = SPREADS[idx + 1]; goToPage(s.type === 'single' ? s.page : s.left); }
+}
+function prev(){
+  if(mode === 'single'){ if(current > 1) goToPage(current - 1); return; }
+  const idx = spreadIndexForPage(current);
+  if(idx > 0){ const s = SPREADS[idx - 1]; goToPage(s.type === 'single' ? s.page : s.left); }
+}
 
 nextBtn.addEventListener('click', next);
 prevBtn.addEventListener('click', prev);
 document.addEventListener('keydown', (e) => { if(e.key === 'ArrowRight') next(); if(e.key === 'ArrowLeft') prev(); });
 jumpBtn.addEventListener('click', () => {
   const n = parseInt(jumpInput.value, 10);
-  if(!isNaN(n)) showPage(n);
+  if(!isNaN(n)) goToPage(n);
 });
 jumpInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') jumpBtn.click(); });
+
+function updateModeToggleLabel(){
+  modeToggle.textContent = mode === 'dual' ? '切換為單頁' : '切換為雙頁';
+}
+modeToggle.addEventListener('click', () => {
+  userChoseMode = true;
+  mode = (mode === 'dual') ? 'single' : 'dual';
+  updateModeToggleLabel();
+  render();
+});
+function applyCapability(){
+  const capable = mq.matches; // >=900px: dual-capable (desktop/tablet)
+  modeToggle.style.display = capable ? 'inline-flex' : 'none';
+  if(!capable){
+    mode = 'single'; // narrow screens: single-page only, no toggle at all
+  } else if(!userChoseMode){
+    mode = 'dual';    // desktop/tablet default
+  }
+  updateModeToggleLabel();
+  render();
+}
+if(mq.addEventListener) mq.addEventListener('change', applyCapability);
+else mq.addListener(applyCapability); // older Safari fallback
 
 // swipe: simple discrete gesture on release, no per-frame dragging of a big
 // DOM tree — this is what keeps it smooth even on a large book.
 let touchStartX = null, touchStartY = null;
-const book = document.getElementById('book');
-book.addEventListener('touchstart', (e) => {
+bookFrame.addEventListener('touchstart', (e) => {
   touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
 }, { passive: true });
-book.addEventListener('touchend', (e) => {
+bookFrame.addEventListener('touchend', (e) => {
   if(touchStartX === null) return;
   const dx = e.changedTouches[0].clientX - touchStartX;
   const dy = e.changedTouches[0].clientY - touchStartY;
@@ -159,14 +269,15 @@ book.addEventListener('touchend', (e) => {
 function updateZoomState(){
   if(!window.visualViewport) return;
   const zoomedIn = window.visualViewport.scale > 1.02;
-  book.style.touchAction = zoomedIn ? 'auto' : 'pan-y pinch-zoom';
+  bookFrame.style.touchAction = zoomedIn ? 'auto' : 'pan-y pinch-zoom';
 }
 if(window.visualViewport){
   window.visualViewport.addEventListener('resize', updateZoomState);
   window.visualViewport.addEventListener('scroll', updateZoomState);
 }
 
-showPage(1);
+applyCapability();
+goToPage(1);
 </script>
 </body>
 </html>
