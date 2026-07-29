@@ -15,9 +15,11 @@
   html,body{ height:100%; background: var(--paper); font-family: 'Noto Sans TC', sans-serif; color: var(--ink); overflow-x:hidden; }
   body{ background-image: radial-gradient(circle at 15% 10%, rgba(184,146,90,0.10), transparent 40%), radial-gradient(circle at 85% 90%, rgba(51,71,63,0.08), transparent 45%); }
   .wrap{ max-width: 960px; margin: 0 auto; padding: 20px 16px 40px; min-height:100vh; display:flex; flex-direction:column; }
-  header{ display:flex; align-items:baseline; justify-content:space-between; padding-bottom:14px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+  header{ display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; border-bottom: 1px solid var(--line); margin-bottom: 16px; gap:12px; flex-wrap:wrap; }
   .brand{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: 18px; letter-spacing: 0.04em; color: var(--pine-deep); }
   .brand span{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:300; font-size:10px; letter-spacing:0.2em; color: var(--ink-soft); margin-top:3px; }
+  .pdf-btn{ display:none; align-items:center; gap:6px; font-size:12px; padding:7px 14px; border-radius:6px; border:1px solid var(--pine); color:var(--pine); text-decoration:none; white-space:nowrap; }
+  .pdf-btn:hover{ background: rgba(51,71,63,0.08); }
   .title-block{ text-align:center; margin-bottom: 14px; }
   h1{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: clamp(22px, 5.5vw, 34px); color: var(--pine-deep); line-height:1.3; }
   .subtitle{ margin-top:6px; font-size:12px; color: var(--ink-soft); letter-spacing:0.03em; }
@@ -58,6 +60,7 @@
 <div class="wrap">
   <header>
     <div class="brand"><a href="index.html#Aa01" style="color:inherit; text-decoration:none;">← 法寶園地</a><span>ONLINE READING · 電子書自架</span></div>
+    <a class="pdf-btn" id="pdfBtn" download>⬇ 下載 PDF</a>
   </header>
   <div class="title-block">
     <h1>淨土五經讀本</h1>
@@ -88,7 +91,15 @@ const TOTAL = 630;
 const IMG_DIR = 'aa01-images/';
 const HAS_COVER = false;      // true if this book has a dedicated 0000.jpg cover
 const HAS_BACKCOVER = false;  // true if this book has a dedicated 9999.jpg backcover
+const HAS_PDF = false;        // set true once aa01.pdf is uploaded next to this html
+const PDF_PATH = 'aa01.pdf';  // original PDF, same folder as this html — simplest to host as-is
 function srcFor(n){ return IMG_DIR + String(n).padStart(4,'0') + '.jpg'; }
+
+const pdfBtn = document.getElementById('pdfBtn');
+if(HAS_PDF){
+  pdfBtn.href = PDF_PATH;
+  pdfBtn.style.display = 'inline-flex';
+}
 
 // ---- Build the dual-page spread map -------------------------------------
 // Rule: page 1 is always its own standalone spread (cover-independent /
@@ -123,6 +134,17 @@ let current = 1;    // authoritative page number
 let mode = 'dual';  // 'single' | 'dual' — actual current render mode
 let userChoseMode = false;
 const mq = window.matchMedia('(min-width: 900px)');
+// "Request desktop site" makes the browser report a wide viewport even on
+// a phone, which fools a pure matchMedia(min-width) check into thinking
+// it's a big screen. window.screen.width/height reflect the PHYSICAL
+// device screen and are not affected by that spoofing, so we require BOTH
+// the viewport to be wide AND the physical screen's shorter side to be
+// wide before allowing dual mode. This forces phones to single-page even
+// when the browser is in desktop-site mode.
+function physicalScreenIsWide(){
+  const narrowSide = Math.min(window.screen.width, window.screen.height);
+  return narrowSide >= 700; // phones (even large ones) fall under this; tablets/desktops don't
+}
 
 const bookFrame = document.getElementById('bookFrame');
 const spinner = document.getElementById('spinner');
@@ -182,14 +204,18 @@ function render(){
     nextBtn.disabled = current >= TOTAL;
     preloadPage(current + 1); preloadPage(current + 2); preloadPage(current - 1);
   } else {
-    bookFrame.classList.add('dual'); bookFrame.classList.remove('single');
     const idx = spreadIndexForPage(current);
     const s = SPREADS[idx];
     if(s.type === 'single'){
+      // A standalone spread (cover/backcover) still renders at single-page
+      // proportions even in dual mode — otherwise it stretches into the
+      // wide dual frame and gets cropped by object-fit:cover.
+      bookFrame.classList.add('single'); bookFrame.classList.remove('dual');
       slotRight.style.display = 'none';
       loadInto(pageImgL, s.page);
       curPageEl.textContent = s.page;
     } else {
+      bookFrame.classList.add('dual'); bookFrame.classList.remove('single');
       slotRight.style.display = '';
       loadInto(pageImgL, s.left);
       loadInto(pageImgR, s.right);
@@ -236,18 +262,20 @@ modeToggle.addEventListener('click', () => {
   render();
 });
 function applyCapability(){
-  const capable = mq.matches; // >=900px: dual-capable (desktop/tablet)
+  const capable = mq.matches && physicalScreenIsWide(); // both must hold — beats desktop-site spoofing
   modeToggle.style.display = capable ? 'inline-flex' : 'none';
   if(!capable){
-    mode = 'single'; // narrow screens: single-page only, no toggle at all
+    mode = 'single'; // phones (real screen, regardless of viewport spoofing): single-page only, no toggle at all
   } else if(!userChoseMode){
-    mode = 'dual';    // desktop/tablet default
+    mode = 'dual';    // genuine desktop/tablet default
   }
   updateModeToggleLabel();
   render();
 }
 if(mq.addEventListener) mq.addEventListener('change', applyCapability);
 else mq.addListener(applyCapability); // older Safari fallback
+window.addEventListener('resize', applyCapability);
+window.addEventListener('orientationchange', applyCapability);
 
 // swipe: simple discrete gesture on release, no per-frame dragging of a big
 // DOM tree — this is what keeps it smooth even on a large book.
