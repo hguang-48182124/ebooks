@@ -35,8 +35,8 @@
      Dual mode = two slots side by side, no gap, so a split spread-chart page
      rejoins visually into one continuous image. */
   .book-frame{ position:relative; display:flex; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y pinch-zoom; -webkit-user-select:none; user-select:none; }
-  .book-frame.single{ width: min(76vw, 420px); aspect-ratio: 408 / 596.4; }
-  .book-frame.dual{ width: min(92vw, 840px); aspect-ratio: 816 / 596.4; }
+  .book-frame.single{ width: min(76vw, 420px, 39.6vh); aspect-ratio: 408 / 596.4; }
+  .book-frame.dual{ width: min(92vw, 840px, 79.4vh); aspect-ratio: 816 / 596.4; }
   .page-slot{ position:relative; flex: 1 1 50%; height:100%; overflow:hidden; background: var(--pine-deep); }
   .page-slot.blank{ background: var(--paper); }
   .page-slot img{ width:100%; height:100%; display:block; object-fit: cover; opacity:0; transition: opacity 0.15s ease; }
