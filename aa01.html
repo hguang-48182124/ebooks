@@ -29,8 +29,6 @@
   .jump-bar button{ font-size:13px; padding:7px 14px; border-radius:6px; border:1px solid var(--pine); background:transparent; color:var(--pine); cursor:pointer; }
   .jump-bar button:hover{ background: rgba(51,71,63,0.08); }
   .jump-bar .sep{ font-size:12px; color:var(--ink-soft); }
-  #modeToggle{ border-color: var(--gold); background: rgba(184,146,90,0.12); color: var(--brick); display:none; }
-  #modeToggle:hover{ background: rgba(184,146,90,0.22); }
 
   .book-stage{ position:relative; display:flex; justify-content:center; align-items:center; margin: 0 auto 10px; width:fit-content; max-width:100%; }
   /* .book-frame holds one or two page-slots. Single mode = one slot, full width.
@@ -70,7 +68,6 @@
     <input type="number" id="jumpInput" min="1" max="630" placeholder="頁碼">
     <button id="jumpBtn">跳到該頁</button>
     <span class="sep">共 630 頁</span>
-    <button id="modeToggle">切換為雙頁</button>
   </div>
   <div class="book-stage">
     <button class="nav-btn nav-prev" id="prevBtn" aria-label="上一頁">‹</button>
@@ -88,7 +85,7 @@
 const TOTAL = 630;
 const IMG_DIR = 'aa01-images/';
 const HAS_COVER = false;      // true if this book has a dedicated 0000.jpg cover
-const HAS_BACKCOVER = false;  // true if this book has a dedicated 9999.jpg backcover
+const HAS_BACKCOVER = true;   // true if this book has a dedicated 9999.jpg backcover
 const HAS_PDF = false;        // set true once aa01.pdf is uploaded next to this html
 const PDF_PATH = 'aa01.pdf';  // original PDF, same folder as this html — simplest to host as-is
 function srcFor(n){ return IMG_DIR + String(n).padStart(4,'0') + '.jpg'; }
@@ -129,8 +126,7 @@ function spreadIndexForPage(page){
 }
 
 let current = 1;    // authoritative page number
-let mode = 'dual';  // 'single' | 'dual' — actual current render mode
-let userChoseMode = false;
+let mode = 'dual';  // 'single' | 'dual' — actual current render mode, fully automatic
 const mq = window.matchMedia('(min-width: 900px)');
 // "Request desktop site" makes the browser report a wide viewport even on
 // a phone, which fools a pure matchMedia(min-width) check into thinking
@@ -157,7 +153,6 @@ const totalPageEl = document.getElementById('totalPage');
 const progressFill = document.getElementById('progressFill');
 const jumpInput = document.getElementById('jumpInput');
 const jumpBtn = document.getElementById('jumpBtn');
-const modeToggle = document.getElementById('modeToggle');
 
 // Preload cache: a handful of Image() objects around the current position
 // so tapping next/prev is instant even though nothing is embedded up front.
@@ -250,24 +245,14 @@ jumpBtn.addEventListener('click', () => {
 });
 jumpInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') jumpBtn.click(); });
 
-function updateModeToggleLabel(){
-  modeToggle.textContent = mode === 'dual' ? '切換為單頁' : '切換為雙頁';
-}
-modeToggle.addEventListener('click', () => {
-  userChoseMode = true;
-  mode = (mode === 'dual') ? 'single' : 'dual';
-  updateModeToggleLabel();
-  render();
-});
+// No manual toggle: mode is fully automatic and re-derived every time,
+// so there is no stored user preference that could get the view "stuck".
+// Phones (by physical screen, immune to desktop-site spoofing) are always
+// forced single-page. Genuine desktop/tablet is always dual-page (cover
+// and backcover spreads still render single via the render() logic above).
 function applyCapability(){
   const capable = mq.matches && physicalScreenIsWide(); // both must hold — beats desktop-site spoofing
-  modeToggle.style.display = capable ? 'inline-flex' : 'none';
-  if(!capable){
-    mode = 'single'; // phones (real screen, regardless of viewport spoofing): single-page only, no toggle at all
-  } else if(!userChoseMode){
-    mode = 'dual';    // genuine desktop/tablet default
-  }
-  updateModeToggleLabel();
+  mode = capable ? 'dual' : 'single';
   render();
 }
 if(mq.addEventListener) mq.addEventListener('change', applyCapability);
