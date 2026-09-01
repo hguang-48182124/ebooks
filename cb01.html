@@ -35,8 +35,8 @@
      封面／封底（以及書封奇偶不對齊時補的虛擬空白頁）一律以單頁比例呈現，
      不會被硬塞進雙頁框架裡變形或跟內文配錯對。 */
   .book-frame{ position:relative; display:flex; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y pinch-zoom; -webkit-user-select:none; user-select:none; }
-  .book-frame.single{ width: min(84vw, 420px); aspect-ratio: 595.20 / 841.68; }
-  .book-frame.dual{ width: min(92vw, 840px); aspect-ratio: 1190.40 / 841.68; }
+  .book-frame.single{ aspect-ratio: 595.20 / 841.68; }
+  .book-frame.dual{ aspect-ratio: 1190.40 / 841.68; }
   .page-slot{ position:relative; flex: 1 1 50%; height:100%; overflow:hidden; background: var(--pine-deep); }
   .page-slot.blank{ background: var(--paper); }
   .page-slot img{ width:100%; height:100%; display:block; object-fit: cover; opacity:0; transition: opacity 0.15s ease; }
@@ -57,7 +57,7 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="brand"><a href="index.html" style="color:inherit; text-decoration:none;">← 法寶園地</a><span>ONLINE READING · 電子書自架</span></div>
+    <div class="brand"><a href="index.html#cb01" style="color:inherit; text-decoration:none;">← 法寶園地</a><span>ONLINE READING · 電子書自架</span></div>
   </header>
   <div class="title-block">
     <h1>阿難問事佛吉凶經(了凡四訓_俞淨意公遇灶神記 太上感應篇_文昌帝君陰騭文)合刊本</h1>
@@ -149,6 +149,32 @@ const progressFill = document.getElementById('progressFill');
 const jumpInput = document.getElementById('jumpInput');
 const jumpBtn = document.getElementById('jumpBtn');
 
+// 從 CSS 用的長寬比字串（例如 "422.40 / 595.20"）解析出純數字比例，
+// 這樣 JS 才能用實際螢幕高度反推出「不會太高」的寬度上限。
+function parseRatio(str){
+  const parts = str.split('/').map(s => parseFloat(s));
+  return parts[0] / parts[1];
+}
+const RATIO_SINGLE = parseRatio('595.20 / 841.68');
+const RATIO_DUAL = parseRatio('1190.40 / 841.68');
+
+// 書本寬度不再是寫死的 CSS 數字，而是即時用「目前螢幕的寬、高」一起算出來：
+// 同時滿足「不超過螢幕寬度的一定比例」和「換算成高度後，不超過螢幕高度的
+// 一定比例」，兩者取小的那個。這樣不管哪一本書（長寬比差多少）、哪種裝置
+// 螢幕多高，書本底下的頁碼／進度條永遠會留在看得到的範圍內，不用再為
+// 每一本書單獨算一個 vh 數字。
+const VH_BUDGET = 0.56; // 書本區塊最多佔畫面高度的 56%，留給上方標題列跟下方頁碼/進度條
+function fitBookFrame(){
+  const isDual = bookFrame.classList.contains('dual');
+  const ratio = isDual ? RATIO_DUAL : RATIO_SINGLE;
+  const vwFrac = isDual ? 0.92 : 0.84;
+  const maxPx = isDual ? 840 : 420;
+  const widthFromVW = window.innerWidth * vwFrac;
+  const widthFromVH = window.innerHeight * VH_BUDGET * ratio;
+  const w = Math.min(widthFromVW, maxPx, widthFromVH);
+  bookFrame.style.width = w + 'px';
+}
+
 // 預先快取目前位置附近的幾張圖，讓上一頁/下一頁反應更快
 const cache = new Map();
 function preloadPage(n){
@@ -211,6 +237,7 @@ function render(){
     const around = [SPREADS[idx + 1], SPREADS[idx - 1]];
     around.forEach(sp => { if(!sp) return; preloadPage(sp.page); preloadPage(sp.left); preloadPage(sp.right); });
   }
+  fitBookFrame(); // 一定要在上面 class 確定是 single 還是 dual 之後才算寬度
 }
 
 function goToPage(n){
