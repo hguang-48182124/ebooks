@@ -57,16 +57,16 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="brand"><a href="index.html#Cb03" style="color:inherit; text-decoration:none;">← 法寶園地</a><span>ONLINE READING · 電子書自架</span></div>
+    <div class="brand"><a href="index.html#cb03" style="color:inherit; text-decoration:none;">← 法寶園地</a><span>ONLINE READING · 電子書自架</span></div>
   </header>
   <div class="title-block">
     <h1>阿難問事佛吉凶經科會</h1>
-    <div class="subtitle">淨空法師講述 · 全書 31 頁</div>
+    <div class="subtitle">淨空法師講述 · 全書 33 頁</div>
   </div>
   <div class="jump-bar">
     <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput" placeholder="頁碼" autocomplete="off">
     <button id="jumpBtn">跳到該頁</button>
-    <span class="sep">共 31 頁</span>
+    <span class="sep">共 33 頁</span>
   </div>
   <div class="book-stage">
     <button class="nav-btn nav-prev" id="prevBtn" aria-label="上一頁">‹</button>
@@ -77,16 +77,16 @@
     </div>
     <button class="nav-btn nav-next" id="nextBtn" aria-label="下一頁">›</button>
   </div>
-  <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">31</span> 頁</div>
+  <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">33</span> 頁</div>
   <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
   <div class="hint">電腦／平板寬螢幕會自動雙頁並排；手機自動維持單頁。點左右箭頭、滑動，或按鍵盤方向鍵翻頁；也可以直接輸入頁碼跳頁</div>
 <footer>香光淨宗學會 · 法寶園地電子書 &nbsp;|&nbsp; 本頁面自行架設，取代原付費平台</footer>
 </div>
 <script>
-const TOTAL = 31;
+const TOTAL = 33;
 const IMG_DIR = 'cb03-images/';
-const HAS_COVER = false;
-const HAS_BACKCOVER = false;
+const HAS_COVER = true;
+const HAS_BACKCOVER = true;
 // 封面固定檔名 0000.jpg、封底固定檔名 9999.jpg，內頁維持原本 0001.jpg 起算，
 // 這樣加補封面/封底時完全不用重新命名內頁。沒有封面/封底時（HAS_COVER 和
 // HAS_BACKCOVER 都是 false）跟原本 ac04 的行為完全一樣。
