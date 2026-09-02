@@ -50,8 +50,6 @@
   .page-indicator b{ color: var(--pine-deep); }
   .progress-track{ width: min(84vw, 420px); height:2px; background: var(--line); margin: 0 auto 30px; border-radius:2px; overflow:hidden; }
   .progress-fill{ height:100%; background: var(--brick); transition: width 0.15s ease; }
-  .hint{ text-align:center; font-size:11px; color: var(--ink-soft); letter-spacing:0.05em; margin-bottom: 30px; }
-  footer{ text-align:center; margin-top: 20px; padding-top:16px; border-top: 1px solid var(--line); font-size:11px; color: var(--ink-soft); letter-spacing:0.05em; }
 </style>
 </head>
 <body>
@@ -79,8 +77,6 @@
   </div>
   <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">480</span> 頁</div>
   <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-  <div class="hint">電腦／平板寬螢幕會自動雙頁並排；手機自動維持單頁。點左右箭頭、滑動，或按鍵盤方向鍵翻頁；也可以直接輸入頁碼跳頁</div>
-<footer>香光淨宗學會 · 法寶園地電子書 &nbsp;|&nbsp; 本頁面自行架設，取代原付費平台</footer>
 </div>
 <script>
 const TOTAL = 480;
@@ -163,12 +159,12 @@ const RATIO_DUAL = parseRatio('1190.40 / 841.44');
 // 去推算寬度。這樣不管哪一本書（長寬比差多少、書名有沒有換行）、哪種裝置
 // 螢幕多高，書本底下的頁碼／進度條永遠會留在看得到的範圍內。
 const FOOTER_RESERVE = 92; // 頁碼列 + 進度條 + 間距，預留的安全高度
-const BOTTOM_MARGIN = 12;  // 畫面最下緣再留點呼吸空間
+const BOTTOM_MARGIN = 8;   // 畫面最下緣再留點呼吸空間（頁碼/進度條下面已經沒有其他文字了，可以再省一點）
 function fitBookFrame(){
   const isDual = bookFrame.classList.contains('dual');
   const ratio = isDual ? RATIO_DUAL : RATIO_SINGLE;
-  const vwFrac = isDual ? 0.92 : 0.84;
-  const maxPx = isDual ? 840 : 420;
+  const vwFrac = isDual ? 0.95 : 0.90;
+  const maxPx = isDual ? 920 : 460;
   const widthFromVW = window.innerWidth * vwFrac;
   const stage = document.querySelector('.book-stage');
   const stageTop = stage ? stage.getBoundingClientRect().top : 0;
