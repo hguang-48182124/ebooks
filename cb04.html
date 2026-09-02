@@ -158,19 +158,22 @@ function parseRatio(str){
 const RATIO_SINGLE = parseRatio('595.20 / 841.44');
 const RATIO_DUAL = parseRatio('1190.40 / 841.44');
 
-// 書本寬度不再是寫死的 CSS 數字，而是即時用「目前螢幕的寬、高」一起算出來：
-// 同時滿足「不超過螢幕寬度的一定比例」和「換算成高度後，不超過螢幕高度的
-// 一定比例」，兩者取小的那個。這樣不管哪一本書（長寬比差多少）、哪種裝置
-// 螢幕多高，書本底下的頁碼／進度條永遠會留在看得到的範圍內，不用再為
-// 每一本書單獨算一個 vh 數字。
-const VH_BUDGET = 0.56; // 書本區塊最多佔畫面高度的 56%，留給上方標題列跟下方頁碼/進度條
+// 書本寬度不是寫死的 CSS 數字，也不是固定百分比，而是即時實際量「書本區塊
+// 上方實際用了多少高度（標題長短、换幾行都會不一樣），再用剩下的螢幕高度
+// 去推算寬度。這樣不管哪一本書（長寬比差多少、書名有沒有換行）、哪種裝置
+// 螢幕多高，書本底下的頁碼／進度條永遠會留在看得到的範圍內。
+const FOOTER_RESERVE = 92; // 頁碼列 + 進度條 + 間距，預留的安全高度
+const BOTTOM_MARGIN = 12;  // 畫面最下緣再留點呼吸空間
 function fitBookFrame(){
   const isDual = bookFrame.classList.contains('dual');
   const ratio = isDual ? RATIO_DUAL : RATIO_SINGLE;
   const vwFrac = isDual ? 0.92 : 0.84;
   const maxPx = isDual ? 840 : 420;
   const widthFromVW = window.innerWidth * vwFrac;
-  const widthFromVH = window.innerHeight * VH_BUDGET * ratio;
+  const stage = document.querySelector('.book-stage');
+  const stageTop = stage ? stage.getBoundingClientRect().top : 0;
+  const availableHeight = Math.max(180, window.innerHeight - stageTop - FOOTER_RESERVE - BOTTOM_MARGIN);
+  const widthFromVH = availableHeight * ratio;
   const w = Math.min(widthFromVW, maxPx, widthFromVH);
   bookFrame.style.width = w + 'px';
 }
