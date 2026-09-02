@@ -35,8 +35,8 @@
      封面／封底（以及書封奇偶不對齊時補的虛擬空白頁）一律以單頁比例呈現，
      不會被硬塞進雙頁框架裡變形或跟內文配錯對。 */
   .book-frame{ position:relative; display:flex; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y pinch-zoom; -webkit-user-select:none; user-select:none; }
-  .book-frame.single{ width: min(84vw, 420px); aspect-ratio: 422.16 / 594.72; }
-  .book-frame.dual{ width: min(92vw, 840px); aspect-ratio: 844.32 / 594.72; }
+  .book-frame.single{ aspect-ratio: 422.16 / 594.72; }
+  .book-frame.dual{ aspect-ratio: 844.32 / 594.72; }
   .page-slot{ position:relative; flex: 1 1 50%; height:100%; overflow:hidden; background: var(--pine-deep); }
   .page-slot.blank{ background: var(--paper); }
   .page-slot img{ width:100%; height:100%; display:block; object-fit: cover; opacity:0; transition: opacity 0.15s ease; }
@@ -57,16 +57,16 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="brand"><a href="index.html#Cb02" style="color:inherit; text-decoration:none;">← 法寶園地</a><span>ONLINE READING · 電子書自架</span></div>
+    <div class="brand"><a href="index.html#cb02" style="color:inherit; text-decoration:none;">← 法寶園地</a><span>ONLINE READING · 電子書自架</span></div>
   </header>
   <div class="title-block">
     <h1>阿難問事佛吉凶經講記-學佛行儀合刊</h1>
-    <div class="subtitle">淨空老法師述 · 全書 184 頁</div>
+    <div class="subtitle">淨空老法師述 · 全書 182 頁</div>
   </div>
   <div class="jump-bar">
     <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput" placeholder="頁碼" autocomplete="off">
     <button id="jumpBtn">跳到該頁</button>
-    <span class="sep">共 184 頁</span>
+    <span class="sep">共 182 頁</span>
   </div>
   <div class="book-stage">
     <button class="nav-btn nav-prev" id="prevBtn" aria-label="上一頁">‹</button>
@@ -77,16 +77,16 @@
     </div>
     <button class="nav-btn nav-next" id="nextBtn" aria-label="下一頁">›</button>
   </div>
-  <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">184</span> 頁</div>
+  <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">182</span> 頁</div>
   <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
   <div class="hint">電腦／平板寬螢幕會自動雙頁並排；手機自動維持單頁。點左右箭頭、滑動，或按鍵盤方向鍵翻頁；也可以直接輸入頁碼跳頁</div>
 <footer>香光淨宗學會 · 法寶園地電子書 &nbsp;|&nbsp; 本頁面自行架設，取代原付費平台</footer>
 </div>
 <script>
-const TOTAL = 184;
+const TOTAL = 182;
 const IMG_DIR = 'cb02-images/';
 const HAS_COVER = false;
-const HAS_BACKCOVER = true;
+const HAS_BACKCOVER = false;
 // 封面固定檔名 0000.jpg、封底固定檔名 9999.jpg，內頁維持原本 0001.jpg 起算，
 // 這樣加補封面/封底時完全不用重新命名內頁。沒有封面/封底時（HAS_COVER 和
 // HAS_BACKCOVER 都是 false）跟原本 ac04 的行為完全一樣。
@@ -148,6 +148,32 @@ const curPageEl = document.getElementById('curPage');
 const progressFill = document.getElementById('progressFill');
 const jumpInput = document.getElementById('jumpInput');
 const jumpBtn = document.getElementById('jumpBtn');
+
+// 從 CSS 用的長寬比字串（例如 "422.40 / 595.20"）解析出純數字比例，
+// 這樣 JS 才能用實際螢幕高度反推出「不會太高」的寬度上限。
+function parseRatio(str){
+  const parts = str.split('/').map(s => parseFloat(s));
+  return parts[0] / parts[1];
+}
+const RATIO_SINGLE = parseRatio('422.16 / 594.72');
+const RATIO_DUAL = parseRatio('844.32 / 594.72');
+
+// 書本寬度不再是寫死的 CSS 數字，而是即時用「目前螢幕的寬、高」一起算出來：
+// 同時滿足「不超過螢幕寬度的一定比例」和「換算成高度後，不超過螢幕高度的
+// 一定比例」，兩者取小的那個。這樣不管哪一本書（長寬比差多少）、哪種裝置
+// 螢幕多高，書本底下的頁碼／進度條永遠會留在看得到的範圍內，不用再為
+// 每一本書單獨算一個 vh 數字。
+const VH_BUDGET = 0.56; // 書本區塊最多佔畫面高度的 56%，留給上方標題列跟下方頁碼/進度條
+function fitBookFrame(){
+  const isDual = bookFrame.classList.contains('dual');
+  const ratio = isDual ? RATIO_DUAL : RATIO_SINGLE;
+  const vwFrac = isDual ? 0.92 : 0.84;
+  const maxPx = isDual ? 840 : 420;
+  const widthFromVW = window.innerWidth * vwFrac;
+  const widthFromVH = window.innerHeight * VH_BUDGET * ratio;
+  const w = Math.min(widthFromVW, maxPx, widthFromVH);
+  bookFrame.style.width = w + 'px';
+}
 
 // 預先快取目前位置附近的幾張圖，讓上一頁/下一頁反應更快
 const cache = new Map();
@@ -211,6 +237,7 @@ function render(){
     const around = [SPREADS[idx + 1], SPREADS[idx - 1]];
     around.forEach(sp => { if(!sp) return; preloadPage(sp.page); preloadPage(sp.left); preloadPage(sp.right); });
   }
+  fitBookFrame(); // 一定要在上面 class 確定是 single 還是 dual 之後才算寬度
 }
 
 function goToPage(n){
