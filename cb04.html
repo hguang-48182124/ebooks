@@ -48,7 +48,7 @@
   @media (min-width: 640px){ .nav-prev{ left: -54px; } .nav-next{ right: -54px; } }
   .page-indicator{ text-align:center; font-size:12px; color: var(--ink-soft); letter-spacing:0.1em; margin-top:14px; margin-bottom:6px; }
   .page-indicator b{ color: var(--pine-deep); }
-  .progress-track{ width: min(84vw, 420px); height:2px; background: var(--line); margin: 0 auto 30px; border-radius:2px; overflow:hidden; }
+  .progress-track{ width: min(84vw, 420px); height:2px; background: var(--line); margin: 0 auto 4px; border-radius:2px; overflow:hidden; }
   .progress-fill{ height:100%; background: var(--brick); transition: width 0.15s ease; }
 </style>
 </head>
@@ -158,7 +158,7 @@ const RATIO_DUAL = parseRatio('1190.40 / 841.44');
 // 上方實際用了多少高度（標題長短、换幾行都會不一樣），再用剩下的螢幕高度
 // 去推算寬度。這樣不管哪一本書（長寬比差多少、書名有沒有換行）、哪種裝置
 // 螢幕多高，書本底下的頁碼／進度條永遠會留在看得到的範圍內。
-const FOOTER_RESERVE = 92; // 頁碼列 + 進度條 + 間距，預留的安全高度
+const FOOTER_RESERVE = 60; // 頁碼列 + 進度條 + 間距，預留的安全高度
 const BOTTOM_MARGIN = 8;   // 畫面最下緣再留點呼吸空間（頁碼/進度條下面已經沒有其他文字了，可以再省一點）
 function fitBookFrame(){
   const isDual = bookFrame.classList.contains('dual');
