@@ -14,16 +14,16 @@
   *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ height:100%; background: var(--paper); font-family: 'Noto Sans TC', sans-serif; color: var(--ink); overflow-x:hidden; }
   body{ background-image: radial-gradient(circle at 15% 10%, rgba(184,146,90,0.10), transparent 40%), radial-gradient(circle at 85% 90%, rgba(51,71,63,0.08), transparent 45%); }
-  .wrap{ max-width: 960px; margin: 0 auto; padding: 20px 16px 40px; min-height:100vh; display:flex; flex-direction:column; }
-  header{ display:flex; align-items:baseline; justify-content:space-between; padding-bottom:14px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+  .wrap{ max-width: 960px; margin: 0 auto; padding: 14px 12px 24px; min-height:100vh; display:flex; flex-direction:column; }
+  header{ display:flex; align-items:baseline; justify-content:space-between; padding-bottom:10px; border-bottom: 1px solid var(--line); margin-bottom: 10px; }
   .brand{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: 18px; letter-spacing: 0.04em; color: var(--pine-deep); }
   .brand span{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:300; font-size:10px; letter-spacing:0.2em; color: var(--ink-soft); margin-top:3px; }
-  .title-block{ text-align:center; margin-bottom: 14px; }
-  h1{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: clamp(19px, 4.8vw, 29px); color: var(--pine-deep); line-height:1.3; overflow-wrap: anywhere; word-break: break-word; }
-  .subtitle{ margin-top:6px; font-size:12px; color: var(--ink-soft); letter-spacing:0.03em; }
+  .title-block{ text-align:center; margin-bottom: 8px; }
+  h1{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: clamp(17px, 4.4vw, 27px); color: var(--pine-deep); line-height:1.25; overflow-wrap: anywhere; word-break: break-word; }
+  .subtitle{ margin-top:4px; font-size:12px; color: var(--ink-soft); letter-spacing:0.03em; }
 
   /* ---- fast page navigation bar (replaces volume-nav; jump straight to a page) ---- */
-  .jump-bar{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .jump-bar{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
   .jump-bar input{ width:64px; text-align:center; font-size:14px; padding:7px 6px; border-radius:6px; border:1px solid var(--line); background:#fff; }
   .jump-bar button{ font-size:13px; padding:7px 14px; border-radius:6px; border:1px solid var(--pine); background:transparent; color:var(--pine); cursor:pointer; }
   .jump-bar button:hover{ background: rgba(51,71,63,0.08); }
@@ -160,13 +160,13 @@ const RATIO_DUAL = parseRatio('1190.40 / 841.68');
 // 上方實際用了多少高度（標題長短、换幾行都會不一樣），再用剩下的螢幕高度
 // 去推算寬度。這樣不管哪一本書（長寬比差多少、書名有沒有換行）、哪種裝置
 // 螢幕多高，書本底下的頁碼／進度條永遠會留在看得到的範圍內。
-const FOOTER_RESERVE = 60; // 頁碼列 + 進度條 + 間距，預留的安全高度
-const BOTTOM_MARGIN = 8;   // 畫面最下緣再留點呼吸空間（頁碼/進度條下面已經沒有其他文字了，可以再省一點）
+const FOOTER_RESERVE = 44; // 頁碼列 + 進度條 + 間距，預留的安全高度
+const BOTTOM_MARGIN = 4;   // 畫面最下緣再留點呼吸空間（頁碼/進度條下面已經沒有其他文字了，可以再省一點）
 function fitBookFrame(){
   const isDual = bookFrame.classList.contains('dual');
   const ratio = isDual ? RATIO_DUAL : RATIO_SINGLE;
-  const vwFrac = isDual ? 0.95 : 0.90;
-  const maxPx = isDual ? 920 : 460;
+  const vwFrac = isDual ? 0.97 : 0.96;
+  const maxPx = isDual ? 920 : 620;
   const NAV_CLEARANCE = 20; // 只需留一點點空間，按鈕允許稍微踩進書本邊緣的留白處
   const widthFromVW = Math.min(window.innerWidth * vwFrac, window.innerWidth - NAV_CLEARANCE * 2);
   const stage = document.querySelector('.book-stage');
