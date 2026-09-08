@@ -14,7 +14,7 @@
   *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ height:100%; background: var(--paper); font-family: 'Noto Sans TC', sans-serif; color: var(--ink); overflow-x:hidden; }
   body{ background-image: radial-gradient(circle at 15% 10%, rgba(184,146,90,0.10), transparent 40%), radial-gradient(circle at 85% 90%, rgba(51,71,63,0.08), transparent 45%); }
-  .wrap{ max-width: 960px; margin: 0 auto; padding: 14px 12px 24px; min-height:100vh; display:flex; flex-direction:column; }
+  .wrap{ max-width: 960px; margin: 0 auto; padding: 14px 12px env(safe-area-inset-bottom, 0px); min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; }
   header{ display:flex; align-items:baseline; justify-content:space-between; padding-bottom:10px; border-bottom: 1px solid var(--line); margin-bottom: 10px; }
   .brand{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: 18px; letter-spacing: 0.04em; color: var(--pine-deep); }
   .brand span{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:300; font-size:10px; letter-spacing:0.2em; color: var(--ink-soft); margin-top:3px; }
@@ -30,7 +30,7 @@
   .jump-bar button:hover{ background: rgba(51,71,63,0.08); }
   .jump-bar .sep{ font-size:11px; color:var(--ink-soft); }
 
-  .book-stage{ position:relative; display:flex; justify-content:center; align-items:center; margin: 0 auto 12px; width:fit-content; max-width:100%; }
+  .book-stage{ position:relative; display:flex; justify-content:center; align-items:center; margin: 0 auto; width:fit-content; max-width:100%; }
   /* .book-frame 內有一或兩個 page-slot。單頁模式=一個 slot 佔滿寬度；
      雙頁模式=左右兩個 slot 並排、中間無縫，讓左右頁在視覺上像攤開的書。
      封面／封底（以及書封奇偶不對齊時補的虛擬空白頁）一律以單頁比例呈現，
@@ -49,9 +49,10 @@
   .nav-btn:disabled{ opacity:0.25; cursor:default; }
   .nav-prev{ left: -20px; } .nav-next{ right: -20px; }
   @media (min-width: 640px){ .nav-btn{ width:42px; height:42px; font-size:18px; } .nav-prev{ left: -54px; } .nav-next{ right: -54px; } }
-  .page-indicator{ text-align:center; font-size:11px; color: var(--ink-soft); letter-spacing:0.1em; margin-top:10px; margin-bottom:4px; }
+  .book-footer{ margin-top:auto; }
+  .page-indicator{ text-align:center; font-size:11px; color: var(--ink-soft); letter-spacing:0.1em; margin-top:10px; margin-bottom:6px; }
   .page-indicator b{ color: var(--pine-deep); }
-  .progress-track{ width: min(84vw, 420px); height:2px; background: var(--line); margin: 0 auto 4px; border-radius:2px; overflow:hidden; }
+  .progress-track{ width: min(84vw, 420px); height:2px; background: var(--line); margin: 0 auto; border-radius:2px; overflow:hidden; }
   .progress-fill{ height:100%; background: var(--brick); transition: width 0.15s ease; }
 </style>
 </head>
@@ -78,8 +79,10 @@
     </div>
     <button class="nav-btn nav-next" id="nextBtn" aria-label="下一頁">›</button>
   </div>
-  <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">480</span> 頁</div>
-  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="book-footer" id="bookFooter">
+    <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">480</span> 頁</div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
 </div>
 <script>
 const TOTAL = 480;
@@ -147,6 +150,7 @@ const curPageEl = document.getElementById('curPage');
 const progressFill = document.getElementById('progressFill');
 const jumpInput = document.getElementById('jumpInput');
 const jumpBtn = document.getElementById('jumpBtn');
+const bookFooter = document.getElementById('bookFooter');
 
 // 從 CSS 用的長寬比字串（例如 "422.40 / 595.20"）解析出純數字比例，
 // 這樣 JS 才能用實際螢幕高度反推出「不會太高」的寬度上限。
@@ -158,21 +162,21 @@ const RATIO_SINGLE = parseRatio('595.20 / 841.68');
 const RATIO_DUAL = parseRatio('1190.40 / 841.68');
 
 // 書本寬度不是寫死的 CSS 數字，也不是固定百分比，而是即時實際量「書本區塊
-// 上方實際用了多少高度（標題長短、换幾行都會不一樣），再用剩下的螢幕高度
-// 去推算寬度。這樣不管哪一本書（長寬比差多少、書名有沒有換行）、哪種裝置
-// 螢幕多高，書本底下的頁碼／進度條永遠會留在看得到的範圍內。
-const FOOTER_RESERVE = 36; // 頁碼列 + 進度條 + 間距，預留的安全高度
-const BOTTOM_MARGIN = 4;   // 畫面最下緣再留點呼吸空間（頁碼/進度條下面已經沒有其他文字了，可以再省一點）
+// 上方實際用了多少高度（標題長短、换幾行都會不一樣）＋頁碼／進度條實際佔用
+// 的高度（直接量測 DOM，不用猜的常數），再用剩下的螢幕高度去推算寬度。這樣
+// 不管哪一本書、哪種裝置螢幕多高，頁碼／進度條永遠貼齊畫面最底部、不留空白，
+// 書本則永遠撐到剩餘空間的最大值。
 function fitBookFrame(){
   const isDual = bookFrame.classList.contains('dual');
   const ratio = isDual ? RATIO_DUAL : RATIO_SINGLE;
-  const vwFrac = isDual ? 0.97 : 0.96;
-  const maxPx = isDual ? 920 : 620;
+  const vwFrac = isDual ? 0.98 : 0.98;
+  const maxPx = isDual ? 960 : 640;
   const NAV_CLEARANCE = 20; // 只需留一點點空間，按鈕允許稍微踩進書本邊緣的留白處
   const widthFromVW = Math.min(window.innerWidth * vwFrac, window.innerWidth - NAV_CLEARANCE * 2);
   const stage = document.querySelector('.book-stage');
   const stageTop = stage ? stage.getBoundingClientRect().top : 0;
-  const availableHeight = Math.max(180, window.innerHeight - stageTop - FOOTER_RESERVE - BOTTOM_MARGIN);
+  const footerHeight = bookFooter ? bookFooter.getBoundingClientRect().height : 0;
+  const availableHeight = Math.max(180, window.innerHeight - stageTop - footerHeight);
   const widthFromVH = availableHeight * ratio;
   const w = Math.min(widthFromVW, maxPx, widthFromVH);
   bookFrame.style.width = w + 'px';
