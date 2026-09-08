@@ -14,20 +14,21 @@
   *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ height:100%; background: var(--paper); font-family: 'Noto Sans TC', sans-serif; color: var(--ink); overflow-x:hidden; }
   body{ background-image: radial-gradient(circle at 15% 10%, rgba(184,146,90,0.10), transparent 40%), radial-gradient(circle at 85% 90%, rgba(51,71,63,0.08), transparent 45%); }
-  .wrap{ max-width: 960px; margin: 0 auto; padding: 20px 16px 40px; min-height:100vh; display:flex; flex-direction:column; }
-  header{ display:flex; align-items:baseline; justify-content:space-between; padding-bottom:14px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+  .wrap{ max-width: 960px; margin: 0 auto; padding: 14px 12px 24px; min-height:100vh; display:flex; flex-direction:column; }
+  header{ display:flex; align-items:baseline; justify-content:space-between; padding-bottom:10px; border-bottom: 1px solid var(--line); margin-bottom: 10px; }
   .brand{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: 18px; letter-spacing: 0.04em; color: var(--pine-deep); }
   .brand span{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:300; font-size:10px; letter-spacing:0.2em; color: var(--ink-soft); margin-top:3px; }
-  .title-block{ text-align:center; margin-bottom: 14px; }
-  h1{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: clamp(22px, 5.5vw, 34px); color: var(--pine-deep); line-height:1.3; }
-  .subtitle{ margin-top:6px; font-size:12px; color: var(--ink-soft); letter-spacing:0.03em; }
+  .title-block{ text-align:center; margin-bottom: 8px; }
+  h1{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: clamp(19px, 4.8vw, 29px); color: var(--pine-deep); line-height:1.25; overflow-wrap: anywhere; word-break: break-word; }
+  h1 .title-sub{ font-size: 0.78em; font-weight:600; }
+  .subtitle{ margin-top:3px; font-size:11px; color: var(--ink-soft); letter-spacing:0.03em; }
 
   /* ---- fast page navigation bar (replaces volume-nav; jump straight to a page) ---- */
-  .jump-bar{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
-  .jump-bar input{ width:64px; text-align:center; font-size:14px; padding:7px 6px; border-radius:6px; border:1px solid var(--line); background:#fff; }
-  .jump-bar button{ font-size:13px; padding:7px 14px; border-radius:6px; border:1px solid var(--pine); background:transparent; color:var(--pine); cursor:pointer; }
+  .jump-bar{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+  .jump-bar input{ width:58px; text-align:center; font-size:13px; padding:6px 5px; border-radius:6px; border:1px solid var(--line); background:#fff; }
+  .jump-bar button{ font-size:12px; padding:6px 12px; border-radius:6px; border:1px solid var(--pine); background:transparent; color:var(--pine); cursor:pointer; }
   .jump-bar button:hover{ background: rgba(51,71,63,0.08); }
-  .jump-bar .sep{ font-size:12px; color:var(--ink-soft); }
+  .jump-bar .sep{ font-size:11px; color:var(--ink-soft); }
 
   .book-stage{ position:relative; display:flex; justify-content:center; align-items:center; margin: 0 auto 12px; width:fit-content; max-width:100%; }
   /* .book-frame 內有一或兩個 page-slot。單頁模式=一個 slot 佔滿寬度；
@@ -35,18 +36,20 @@
      封面／封底（以及書封奇偶不對齊時補的虛擬空白頁）一律以單頁比例呈現，
      不會被硬塞進雙頁框架裡變形或跟內文配錯對。 */
   .book-frame{ position:relative; display:flex; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y pinch-zoom; -webkit-user-select:none; user-select:none; }
-  .book-frame.single{ aspect-ratio: 595.20 / 841.44; }
-  .book-frame.dual{ aspect-ratio: 1190.40 / 841.44; }
+  .book-frame.single{ aspect-ratio: 595.20 / 841.68; }
+  .book-frame.dual{ aspect-ratio: 1190.40 / 841.68; }
   .page-slot{ position:relative; flex: 1 1 50%; height:100%; overflow:hidden; background: var(--pine-deep); }
   .page-slot.blank{ background: var(--paper); }
   .page-slot img{ width:100%; height:100%; display:block; object-fit: cover; opacity:0; transition: opacity 0.15s ease; }
   .page-slot img.ready{ opacity:1; }
   .book-frame .spinner{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(237,231,214,0.5); font-size:12px; letter-spacing:0.1em; z-index:2; pointer-events:none; }
-  .nav-btn{ position:absolute; top:50%; transform: translateY(-50%); width:42px; height:42px; border-radius:50%; border:none; background: rgba(255,255,255,0.85); color: var(--pine-deep); font-size:18px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 14px rgba(43,42,37,0.18); z-index:5; }
+  /* 手機版按鈕縮小、只留一點點安全距離（允許輕微踩進書本邊緣的留白處），
+     這樣既有看得到的翻頁鈕、書本也還是接近最大。螢幕更寬時維持原本的大按鈕。 */
+  .nav-btn{ position:absolute; top:50%; transform: translateY(-50%); width:26px; height:26px; border-radius:50%; border:none; background: rgba(255,255,255,0.85); color: var(--pine-deep); font-size:13px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 14px rgba(43,42,37,0.18); z-index:5; }
   .nav-btn:disabled{ opacity:0.25; cursor:default; }
-  .nav-prev{ left: -6px; } .nav-next{ right: -6px; }
-  @media (min-width: 640px){ .nav-prev{ left: -54px; } .nav-next{ right: -54px; } }
-  .page-indicator{ text-align:center; font-size:12px; color: var(--ink-soft); letter-spacing:0.1em; margin-top:14px; margin-bottom:6px; }
+  .nav-prev{ left: -20px; } .nav-next{ right: -20px; }
+  @media (min-width: 640px){ .nav-btn{ width:42px; height:42px; font-size:18px; } .nav-prev{ left: -54px; } .nav-next{ right: -54px; } }
+  .page-indicator{ text-align:center; font-size:11px; color: var(--ink-soft); letter-spacing:0.1em; margin-top:10px; margin-bottom:4px; }
   .page-indicator b{ color: var(--pine-deep); }
   .progress-track{ width: min(84vw, 420px); height:2px; background: var(--line); margin: 0 auto 4px; border-radius:2px; overflow:hidden; }
   .progress-fill{ height:100%; background: var(--brick); transition: width 0.15s ease; }
@@ -151,21 +154,22 @@ function parseRatio(str){
   const parts = str.split('/').map(s => parseFloat(s));
   return parts[0] / parts[1];
 }
-const RATIO_SINGLE = parseRatio('595.20 / 841.44');
-const RATIO_DUAL = parseRatio('1190.40 / 841.44');
+const RATIO_SINGLE = parseRatio('595.20 / 841.68');
+const RATIO_DUAL = parseRatio('1190.40 / 841.68');
 
 // 書本寬度不是寫死的 CSS 數字，也不是固定百分比，而是即時實際量「書本區塊
 // 上方實際用了多少高度（標題長短、换幾行都會不一樣），再用剩下的螢幕高度
 // 去推算寬度。這樣不管哪一本書（長寬比差多少、書名有沒有換行）、哪種裝置
 // 螢幕多高，書本底下的頁碼／進度條永遠會留在看得到的範圍內。
-const FOOTER_RESERVE = 60; // 頁碼列 + 進度條 + 間距，預留的安全高度
-const BOTTOM_MARGIN = 8;   // 畫面最下緣再留點呼吸空間（頁碼/進度條下面已經沒有其他文字了，可以再省一點）
+const FOOTER_RESERVE = 36; // 頁碼列 + 進度條 + 間距，預留的安全高度
+const BOTTOM_MARGIN = 4;   // 畫面最下緣再留點呼吸空間（頁碼/進度條下面已經沒有其他文字了，可以再省一點）
 function fitBookFrame(){
   const isDual = bookFrame.classList.contains('dual');
   const ratio = isDual ? RATIO_DUAL : RATIO_SINGLE;
-  const vwFrac = isDual ? 0.95 : 0.90;
-  const maxPx = isDual ? 920 : 460;
-  const widthFromVW = window.innerWidth * vwFrac;
+  const vwFrac = isDual ? 0.97 : 0.96;
+  const maxPx = isDual ? 920 : 620;
+  const NAV_CLEARANCE = 20; // 只需留一點點空間，按鈕允許稍微踩進書本邊緣的留白處
+  const widthFromVW = Math.min(window.innerWidth * vwFrac, window.innerWidth - NAV_CLEARANCE * 2);
   const stage = document.querySelector('.book-stage');
   const stageTop = stage ? stage.getBoundingClientRect().top : 0;
   const availableHeight = Math.max(180, window.innerHeight - stageTop - FOOTER_RESERVE - BOTTOM_MARGIN);
@@ -277,7 +281,7 @@ window.addEventListener('resize', applyCapability);
 window.addEventListener('orientationchange', applyCapability);
 
 // swipe：放開手指才判斷一次方向，不逐格拖動一大串 DOM，這樣大本的書也不會頓
-let touchStartX = null, touchStartY = null;
+let touchStartX = null, touchStartY = null, justSwiped = false;
 bookFrame.addEventListener('touchstart', (e) => {
   touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
 }, { passive: true });
@@ -286,9 +290,20 @@ bookFrame.addEventListener('touchend', (e) => {
   const dx = e.changedTouches[0].clientX - touchStartX;
   const dy = e.changedTouches[0].clientY - touchStartY;
   if(Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)){
+    justSwiped = true;
     if(dx < 0) next(); else prev();
   }
   touchStartX = null; touchStartY = null;
+});
+
+// 手機沒有夠的寧度放外側的翻頁圓鈕，改成點書本左右兩側區域來翻頁（中間一小對不反應，避免點到中間內容時誤觸）；
+// 如果刚刚才判定為一次滑動，就跳過這次點擊判斷，避免滑動完後別頃滔看一次。
+bookFrame.addEventListener('click', (e) => {
+  if(justSwiped){ justSwiped = false; return; }
+  const rect = bookFrame.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  if(x < rect.width * 0.35) prev();
+  else if(x > rect.width * 0.65) next();
 });
 
 // 放大時允許自由左右上下平移，縮回原尺寸時恢復左右滑動＝翻頁
