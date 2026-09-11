@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<title>佛說十善業道經 · 線上電子書</title>
+<title>十善業道經講記 · 線上電子書</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
   :root{
@@ -36,8 +36,8 @@
      封面／封底（以及書封奇偶不對齊時補的虛擬空白頁）一律以單頁比例呈現，
      不會被硬塞進雙頁框架裡變形或跟內文配錯對。 */
   .book-frame{ position:relative; display:flex; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y pinch-zoom; -webkit-user-select:none; user-select:none; }
-  .book-frame.single{ aspect-ratio: 595.20 / 841.44; }
-  .book-frame.dual{ aspect-ratio: 1190.40 / 841.44; }
+  .book-frame.single{ aspect-ratio: 433.70 / 612.28; }
+  .book-frame.dual{ aspect-ratio: 867.40 / 612.28; }
   .page-slot{ position:relative; flex: 1 1 50%; height:100%; overflow:hidden; background: var(--pine-deep); }
   .page-slot.blank{ background: var(--paper); }
   .page-slot img{ width:100%; height:100%; display:block; object-fit: cover; opacity:0; transition: opacity 0.15s ease; }
@@ -59,16 +59,16 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="brand"><a href="index.html#Cc01" style="color:inherit; text-decoration:none;">← 法寶園地</a><span>ONLINE READING · 電子書自架</span></div>
+    <div class="brand"><a href="index.html#cc02" style="color:inherit; text-decoration:none;">← 法寶園地</a><span>ONLINE READING · 電子書自架</span></div>
   </header>
   <div class="title-block">
-    <h1>佛說十善業道經</h1>
+    <h1>十善業道經講記</h1>
     <div class="subtitle">淨空法師講述</div>
   </div>
   <div class="jump-bar">
     <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput" placeholder="頁碼" autocomplete="off">
     <button id="jumpBtn">跳到該頁</button>
-    <span class="sep">共 130 頁</span>
+    <span class="sep">共 769 頁</span>
   </div>
   <div class="book-stage">
     <button class="nav-btn nav-prev" id="prevBtn" aria-label="上一頁">‹</button>
@@ -80,15 +80,15 @@
     <button class="nav-btn nav-next" id="nextBtn" aria-label="下一頁">›</button>
   </div>
   <div class="book-footer" id="bookFooter">
-    <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">130</span> 頁</div>
+    <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">769</span> 頁</div>
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
   </div>
 </div>
 <script>
-const TOTAL = 130;
-const IMG_DIR = 'cc01-images/';
-const HAS_COVER = false;
-const HAS_BACKCOVER = false;
+const TOTAL = 769;
+const IMG_DIR = 'cc02-images/';
+const HAS_COVER = true;
+const HAS_BACKCOVER = true;
 // 封面固定檔名 0000.jpg、封底固定檔名 9999.jpg，內頁維持原本 0001.jpg 起算，
 // 這樣加補封面/封底時完全不用重新命名內頁。沒有封面/封底時（HAS_COVER 和
 // HAS_BACKCOVER 都是 false）跟原本 ac04 的行為完全一樣。
@@ -158,8 +158,8 @@ function parseRatio(str){
   const parts = str.split('/').map(s => parseFloat(s));
   return parts[0] / parts[1];
 }
-const RATIO_SINGLE = parseRatio('595.20 / 841.44');
-const RATIO_DUAL = parseRatio('1190.40 / 841.44');
+const RATIO_SINGLE = parseRatio('433.70 / 612.28');
+const RATIO_DUAL = parseRatio('867.40 / 612.28');
 
 // 書本寬度不是寫死的 CSS 數字，也不是固定百分比，而是即時實際量「書本區塊
 // 上方實際用了多少高度（標題長短、换幾行都會不一樣）＋頁碼／進度條實際佔用
