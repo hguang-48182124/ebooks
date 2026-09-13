@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<title>信仰的轉移 · 線上電子書</title>
+<title>南山律在家備覽導讀-04別行篇 · 線上電子書</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
   :root{
@@ -14,17 +14,16 @@
   *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ height:100%; background: var(--paper); font-family: 'Noto Sans TC', sans-serif; color: var(--ink); overflow-x:hidden; }
   body{ background-image: radial-gradient(circle at 15% 10%, rgba(184,146,90,0.10), transparent 40%), radial-gradient(circle at 85% 90%, rgba(51,71,63,0.08), transparent 45%); }
-  .wrap{ max-width: 960px; margin: 0 auto; padding: 14px 12px env(safe-area-inset-bottom, 0px); min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; }
-  header{ display:flex; align-items:baseline; justify-content:space-between; padding-bottom:10px; border-bottom: 1px solid var(--line); margin-bottom: 10px; }
+  .wrap{ max-width: 960px; margin: 0 auto; padding: 20px 16px env(safe-area-inset-bottom, 0px); min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; }
+  header{ display:flex; align-items:baseline; justify-content:space-between; padding-bottom:14px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
   .brand{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: 18px; letter-spacing: 0.04em; color: var(--pine-deep); }
   .brand span{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:300; font-size:10px; letter-spacing:0.2em; color: var(--ink-soft); margin-top:3px; }
-  .title-block{ text-align:center; margin-bottom: 8px; }
-  h1{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: clamp(17px, 4.2vw, 26px); color: var(--pine-deep); line-height:1.25; overflow-wrap: anywhere; word-break: break-word; }
-  h1 .title-sub{ font-size: 0.78em; font-weight:600; }
-  .subtitle{ margin-top:3px; font-size:11px; color: var(--ink-soft); letter-spacing:0.03em; }
+  .title-block{ text-align:center; margin-bottom: 14px; }
+  h1{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: clamp(17px, 4.2vw, 26px); color: var(--pine-deep); line-height:1.3; }
+  .subtitle{ margin-top:6px; font-size:12px; color: var(--ink-soft); letter-spacing:0.03em; }
 
   /* ---- fast page navigation bar (replaces volume-nav; jump straight to a page) ---- */
-  .jump-bar{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+  .jump-bar{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
   .jump-bar input{ width:52px; text-align:center; font-size:12px; padding:5px 4px; border-radius:6px; border:1px solid var(--line); background:#fff; }
   .jump-bar button{ font-size:11px; padding:5px 10px; border-radius:6px; border:1px solid var(--pine); background:transparent; color:var(--pine); cursor:pointer; }
   .jump-bar button:hover{ background: rgba(51,71,63,0.08); }
@@ -36,21 +35,21 @@
      封面／封底（以及書封奇偶不對齊時補的虛擬空白頁）一律以單頁比例呈現，
      不會被硬塞進雙頁框架裡變形或跟內文配錯對。 */
   .book-frame{ position:relative; display:flex; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y pinch-zoom; -webkit-user-select:none; user-select:none; }
-  .book-frame.single{ aspect-ratio: 418.80 / 597.12; }
-  .book-frame.dual{ aspect-ratio: 837.60 / 597.12; }
+  .book-frame.single{ aspect-ratio: 420.48 / 595.20; }
+  .book-frame.dual{ aspect-ratio: 840.96 / 595.20; }
   .page-slot{ position:relative; flex: 1 1 50%; height:100%; overflow:hidden; background: var(--pine-deep); }
   .page-slot.blank{ background: var(--paper); }
   .page-slot img{ width:100%; height:100%; display:block; object-fit: cover; opacity:0; transition: opacity 0.15s ease; }
   .page-slot img.ready{ opacity:1; }
   .book-frame .spinner{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(237,231,214,0.5); font-size:12px; letter-spacing:0.1em; z-index:2; pointer-events:none; }
-  /* 手機版按鈕縮小、只留一點點安全距離（允許輕微踩進書本邊緣的留白處），
-     這樣既有看得到的翻頁鈕、書本也還是接近最大。螢幕更寬時維持原本的大按鈕。 */
+  /* 手機版不放外側翻頁圓鈕（沒有多的寬度可以擠），改成點書本左右兩側區域翻頁、加上滑動手勢；
+     螢幕夠寬（電腦／平板）才有多餘空間，才顯示浮動的圓形翻頁鈕。 */
   .nav-btn{ position:absolute; top:50%; transform: translateY(-50%); width:26px; height:26px; border-radius:50%; border:none; background: rgba(255,255,255,0.85); color: var(--pine-deep); font-size:13px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 14px rgba(43,42,37,0.18); z-index:5; }
   .nav-btn:disabled{ opacity:0.25; cursor:default; }
   .nav-prev{ left: -20px; } .nav-next{ right: -20px; }
   @media (min-width: 640px){ .nav-btn{ width:42px; height:42px; font-size:18px; } .nav-prev{ left: -54px; } .nav-next{ right: -54px; } }
   .book-footer{ margin-top:auto; }
-  .page-indicator{ text-align:center; font-size:10px; color: var(--ink-soft); letter-spacing:0.1em; margin-top:10px; margin-bottom:6px; }
+  .page-indicator{ text-align:center; font-size:10px; color: var(--ink-soft); letter-spacing:0.1em; margin-top:14px; margin-bottom:6px; }
   .page-indicator b{ color: var(--pine-deep); }
   .progress-track{ width: min(84vw, 420px); height:2px; background: var(--line); margin: 0 auto; border-radius:2px; overflow:hidden; }
   .progress-fill{ height:100%; background: var(--brick); transition: width 0.15s ease; }
@@ -59,16 +58,16 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="brand"><a href="index.html#Ce11" style="color:inherit; text-decoration:none;">← 法寶園地</a><span>ONLINE READING · 電子書自架</span></div>
+    <div class="brand"><a href="index.html#Ca13" style="color:inherit; text-decoration:none;">← 法寶園地</a><span>ONLINE READING · 電子書自架</span></div>
   </header>
   <div class="title-block">
-    <h1>信仰的轉移</h1>
-    <div class="subtitle">釋超塵</div>
+    <h1>南山律在家備覽導讀-04別行篇</h1>
+    <div class="subtitle">弘一大師遺著＼良因法師導讀 · 全書 325 頁</div>
   </div>
   <div class="jump-bar">
     <input type="text" inputmode="numeric" pattern="[0-9]*" id="jumpInput" placeholder="頁碼" autocomplete="off">
     <button id="jumpBtn">跳到該頁</button>
-    <span class="sep">共 116 頁</span>
+    <span class="sep">共 325 頁</span>
   </div>
   <div class="book-stage">
     <button class="nav-btn nav-prev" id="prevBtn" aria-label="上一頁">‹</button>
@@ -80,13 +79,13 @@
     <button class="nav-btn nav-next" id="nextBtn" aria-label="下一頁">›</button>
   </div>
   <div class="book-footer" id="bookFooter">
-    <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">116</span> 頁</div>
+    <div class="page-indicator">第 <b id="curPage">1</b> / <span id="totalPage">325</span> 頁</div>
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
   </div>
 </div>
 <script>
-const TOTAL = 116;
-const IMG_DIR = 'ce11-images/';
+const TOTAL = 325;
+const IMG_DIR = 'ca13-images/';
 const HAS_COVER = false;
 const HAS_BACKCOVER = false;
 // 封面固定檔名 0000.jpg、封底固定檔名 9999.jpg，內頁維持原本 0001.jpg 起算，
@@ -160,20 +159,21 @@ function parseRatio(str){
   const parts = str.split('/').map(s => parseFloat(s));
   return parts[0] / parts[1];
 }
-const RATIO_SINGLE = parseRatio('418.80 / 597.12');
-const RATIO_DUAL = parseRatio('837.60 / 597.12');
+const RATIO_SINGLE = parseRatio('420.48 / 595.20');
+const RATIO_DUAL = parseRatio('840.96 / 595.20');
 
 // 書本寬度不是寫死的 CSS 數字，也不是固定百分比，而是即時實際量「書本區塊
-// 上方實際用了多少高度（標題長短、换幾行都會不一樣）＋頁碼／進度條實際佔用
-// 的高度（直接量測 DOM，不用猜的常數），再用剩下的螢幕高度去推算寬度。這樣
-// 不管哪一本書、哪種裝置螢幕多高，頁碼／進度條永遠貼齊畫面最底部、不留空白，
-// 書本則永遠撐到剩餘空間的最大值。
+// 上方實際用了多少高度（標題長短、换幾行都會不一樣），再用剩下的螢幕高度
+// 去推算寬度。這樣不管哪一本書（長寬比差多少、書名有沒有換行）、哪種裝置
+// 螢幕多高，書本底下的頁碼／進度條永遠會留在看得到的範圍內。
+// 頁碼列＋進度條的高度不再用猜的常數，改成即時量測 DOM 實際高度，
+// 這樣不管哪一本書都會貼齊畫面最底部、不留空白。
 function fitBookFrame(){
   const isDual = bookFrame.classList.contains('dual');
   const ratio = isDual ? RATIO_DUAL : RATIO_SINGLE;
-  const vwFrac = isDual ? 0.98 : 0.98;
+  const vwFrac = 0.98;
   const maxPx = isDual ? 960 : 640;
-  const NAV_CLEARANCE = 20; // 只需留一點點空間，按鈕允許稍微踩進書本邊緣的留白處
+  const NAV_CLEARANCE = 20;
   const widthFromVW = Math.min(window.innerWidth * vwFrac, window.innerWidth - NAV_CLEARANCE * 2);
   const stage = document.querySelector('.book-stage');
   const stageTop = stage ? stage.getBoundingClientRect().top : 0;
@@ -239,15 +239,7 @@ function render(){
       slotRight.style.display = '';
       loadInto(pageImgL, s.left);
       loadInto(pageImgR, s.right);
-      // 注意：left/right 是「畫面上擺哪邊」的視覺位置（右起、右先左後，
-      // 所以 left 存的其實是比較大的頁碼），跟頁碼文字要用「小–大」的
-      // 順序顯示是兩件事，不能直接拿 left/right 組字串，否則會印成
-      // 「19–18」這種倒過來的順序。
-      if(s.left != null){
-        curPageEl.textContent = Math.min(s.left, s.right) + '–' + Math.max(s.left, s.right);
-      } else {
-        curPageEl.textContent = String(s.right);
-      }
+      curPageEl.textContent = s.right ? (s.left + '–' + s.right) : String(s.left);
     }
     prevBtn.disabled = idx <= 0;
     nextBtn.disabled = idx >= SPREADS.length - 1;
@@ -325,7 +317,6 @@ function updateZoomState(){
   if(!window.visualViewport) return;
   const zoomedIn = window.visualViewport.scale > 1.02;
   bookFrame.style.touchAction = zoomedIn ? 'auto' : 'pan-y pinch-zoom';
-  if(!zoomedIn) fitBookFrame();
 }
 if(window.visualViewport){
   window.visualViewport.addEventListener('resize', updateZoomState);

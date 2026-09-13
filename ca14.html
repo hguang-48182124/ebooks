@@ -237,7 +237,15 @@ function render(){
       slotRight.style.display = '';
       loadInto(pageImgL, s.left);
       loadInto(pageImgR, s.right);
-      curPageEl.textContent = s.right ? (s.left + '–' + s.right) : String(s.left);
+      // 注意：left/right 是「畫面上擺哪邊」的視覺位置（右起、右先左後，
+      // 所以 left 存的其實是比較大的頁碼），跟頁碼文字要用「小–大」的
+      // 順序顯示是兩件事，不能直接拿 left/right 組字串，否則會印成
+      // 「19–18」這種倒過來的順序。
+      if(s.left != null){
+        curPageEl.textContent = Math.min(s.left, s.right) + '–' + Math.max(s.left, s.right);
+      } else {
+        curPageEl.textContent = String(s.right);
+      }
     }
     prevBtn.disabled = idx <= 0;
     nextBtn.disabled = idx >= SPREADS.length - 1;
@@ -304,6 +312,7 @@ function updateZoomState(){
   if(!window.visualViewport) return;
   const zoomedIn = window.visualViewport.scale > 1.02;
   bookFrame.style.touchAction = zoomedIn ? 'auto' : 'pan-y pinch-zoom';
+  if(!zoomedIn) fitBookFrame();
 }
 if(window.visualViewport){
   window.visualViewport.addEventListener('resize', updateZoomState);
