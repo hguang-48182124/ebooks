@@ -19,15 +19,15 @@
   .brand{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: 18px; letter-spacing: 0.04em; color: var(--pine-deep); }
   .brand span{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:300; font-size:10px; letter-spacing:0.2em; color: var(--ink-soft); margin-top:3px; }
   .title-block{ text-align:center; margin-bottom: 14px; }
-  h1{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: clamp(19px, 4.8vw, 29px); color: var(--pine-deep); line-height:1.3; }
+  h1{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: clamp(17px, 4.2vw, 26px); color: var(--pine-deep); line-height:1.3; }
   .subtitle{ margin-top:6px; font-size:12px; color: var(--ink-soft); letter-spacing:0.03em; }
 
   /* ---- fast page navigation bar (replaces volume-nav; jump straight to a page) ---- */
   .jump-bar{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
-  .jump-bar input{ width:64px; text-align:center; font-size:14px; padding:7px 6px; border-radius:6px; border:1px solid var(--line); background:#fff; }
-  .jump-bar button{ font-size:13px; padding:7px 14px; border-radius:6px; border:1px solid var(--pine); background:transparent; color:var(--pine); cursor:pointer; }
+  .jump-bar input{ width:52px; text-align:center; font-size:12px; padding:5px 4px; border-radius:6px; border:1px solid var(--line); background:#fff; }
+  .jump-bar button{ font-size:11px; padding:5px 10px; border-radius:6px; border:1px solid var(--pine); background:transparent; color:var(--pine); cursor:pointer; }
   .jump-bar button:hover{ background: rgba(51,71,63,0.08); }
-  .jump-bar .sep{ font-size:12px; color:var(--ink-soft); }
+  .jump-bar .sep{ font-size:10px; color:var(--ink-soft); }
 
   .book-stage{ position:relative; display:flex; justify-content:center; align-items:center; margin: 0 auto; width:fit-content; max-width:100%; }
   /* .book-frame 內有一或兩個 page-slot。單頁模式=一個 slot 佔滿寬度；
@@ -47,7 +47,7 @@
   .nav-prev{ left: -20px; } .nav-next{ right: -20px; }
   @media (min-width: 640px){ .nav-btn{ width:42px; height:42px; font-size:18px; } .nav-prev{ left: -54px; } .nav-next{ right: -54px; } }
   .book-footer{ margin-top:auto; }
-  .page-indicator{ text-align:center; font-size:12px; color: var(--ink-soft); letter-spacing:0.1em; margin-top:14px; margin-bottom:6px; }
+  .page-indicator{ text-align:center; font-size:10px; color: var(--ink-soft); letter-spacing:0.1em; margin-top:14px; margin-bottom:6px; }
   .page-indicator b{ color: var(--pine-deep); }
   .progress-track{ width: min(84vw, 420px); height:2px; background: var(--line); margin: 0 auto; border-radius:2px; overflow:hidden; }
   .progress-fill{ height:100%; background: var(--brick); transition: width 0.15s ease; }
@@ -103,14 +103,16 @@ function srcFor(n){
 // （避免後面每一頁的左右配對都因為少一頁而錯位）。
 function buildSpreads(){
   const spreads = [{ type:'single', page: 1 }];
-  const interiorEnd = TOTAL - (HAS_BACKCOVER ? 1 : 0);
+  const interiorEnd = TOTAL - 1; // 最後一頁永遠獨立，不排進配對池
   const interior = [];
   for(let p = 2; p <= interiorEnd; p++) interior.push(p);
   if(interior.length % 2 === 1) interior.push(null); // 虛擬空白頁
   for(let i = 0; i < interior.length; i += 2){
-    spreads.push({ type:'pair', left: interior[i], right: interior[i+1] });
+    // 傳統中式古籍為「右起、右先左後」的翻頁順序，頁碼較小的頁要放在右邊、
+    // 頁碼較大的放左邊，跟西式書左小右大的直覺相反，所以這裡刻意對調。
+    spreads.push({ type:'pair', left: interior[i+1], right: interior[i] });
   }
-  if(HAS_BACKCOVER) spreads.push({ type:'single', page: TOTAL });
+  spreads.push({ type:'single', page: TOTAL });
   return spreads;
 }
 const SPREADS = buildSpreads();
