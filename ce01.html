@@ -36,8 +36,8 @@
      封面／封底（以及書封奇偶不對齊時補的虛擬空白頁）一律以單頁比例呈現，
      不會被硬塞進雙頁框架裡變形或跟內文配錯對。 */
   .book-frame{ position:relative; display:flex; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y pinch-zoom; -webkit-user-select:none; user-select:none; }
-  .book-frame.single{ aspect-ratio: 612.00 / 1008.00; }
-  .book-frame.dual{ aspect-ratio: 1224.00 / 1008.00; }
+  .book-frame.single{ aspect-ratio: 850.00 / 1240.00; }
+  .book-frame.dual{ aspect-ratio: 1700.00 / 1240.00; }
   .page-slot{ position:relative; flex: 1 1 50%; height:100%; overflow:hidden; background: var(--pine-deep); }
   .page-slot.blank{ background: var(--paper); }
   .page-slot img{ width:100%; height:100%; display:block; object-fit: cover; opacity:0; transition: opacity 0.15s ease; }
@@ -158,8 +158,8 @@ function parseRatio(str){
   const parts = str.split('/').map(s => parseFloat(s));
   return parts[0] / parts[1];
 }
-const RATIO_SINGLE = parseRatio('612.00 / 1008.00');
-const RATIO_DUAL = parseRatio('1224.00 / 1008.00');
+const RATIO_SINGLE = parseRatio('850.00 / 1240.00');
+const RATIO_DUAL = parseRatio('1700.00 / 1240.00');
 
 // 書本寬度不是寫死的 CSS 數字，也不是固定百分比，而是即時實際量「書本區塊
 // 上方實際用了多少高度（標題長短、换幾行都會不一樣）＋頁碼／進度條實際佔用
