@@ -312,11 +312,16 @@ bookFrame.addEventListener('click', (e) => {
   else if(x > rect.width * 0.65) next();
 });
 
-// 放大時允許自由左右上下平移，縮回原尺寸時恢復左右滑動＝翻頁
+// 放大時允許自由左右上下平移，縮回原尺寸時恢復左右滑動＝翻頁。
+// 另外，手機瀏覽器的網址列收合/展開只會觸發 visualViewport 的 resize，
+// 不會觸發 window 的 resize，所以順便在這裡也重新算一次書本大小，
+// 這樣網址列收合、可視空間變大之後書本才會跟著補滿，不會停在剛載入時
+// 網址列還在、算出來偏小的尺寸不動。
 function updateZoomState(){
   if(!window.visualViewport) return;
   const zoomedIn = window.visualViewport.scale > 1.02;
   bookFrame.style.touchAction = zoomedIn ? 'auto' : 'pan-y pinch-zoom';
+  if(!zoomedIn) fitBookFrame();
 }
 if(window.visualViewport){
   window.visualViewport.addEventListener('resize', updateZoomState);
