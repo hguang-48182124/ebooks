@@ -35,8 +35,8 @@
      Dual mode = two slots side by side, no gap, so a split spread-chart page
      rejoins visually into one continuous image. */
   .book-frame{ position:relative; display:flex; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y pinch-zoom; -webkit-user-select:none; user-select:none; }
-  .book-frame.single{ width: min(76vw, 420px, 39.6vh); aspect-ratio: 408 / 596.4; }
-  .book-frame.dual{ width: min(92vw, 840px, 79.4vh); aspect-ratio: 816 / 596.4; }
+  .book-frame.single{ aspect-ratio: 408 / 596.4; }
+  .book-frame.dual{ aspect-ratio: 816 / 596.4; }
   .page-slot{ position:relative; flex: 1 1 50%; height:100%; overflow:hidden; background: var(--pine-deep); }
   .page-slot.blank{ background: var(--paper); }
   .page-slot img{ width:100%; height:100%; display:block; object-fit: cover; opacity:0; transition: opacity 0.15s ease; }
@@ -160,6 +160,32 @@ const jumpInput = document.getElementById('jumpInput');
 const jumpBtn = document.getElementById('jumpBtn');
 const bookFooter = document.getElementById('bookFooter');
 
+const RATIO_SINGLE = 408 / 596.4;
+const RATIO_DUAL = 816 / 596.4;
+
+// 書本寬度不是寫死的 CSS 數字，而是即時量測「書本區塊上方實際用了多少高度」
+// 再用剩下的螢幕高度去推算寬度，這樣不管標題長短換幾行、哪種裝置螢幕多高，
+// 書本底下的頁碼／進度條永遠會留在看得到的範圍內。
+function fitBookFrame(){
+  const isDual = bookFrame.classList.contains('dual');
+  const ratio = isDual ? RATIO_DUAL : RATIO_SINGLE;
+  const vwFrac = 0.98;
+  const maxPx = isDual ? 960 : 640;
+  // 手機版翻頁鈕是貼在 book-frame 內側的透明文字箭頭（被 overflow:hidden 裁掉，
+  // 不佔額外寬度），不用留淨空；桌機（≥640px）翻頁鈕浮在書本外側，才需要留白
+  // 避免書本跟按鈕互相重疊。
+  const isWideScreen = window.innerWidth >= 640;
+  const NAV_CLEARANCE = isWideScreen ? 20 : 0;
+  const widthFromVW = Math.min(window.innerWidth * vwFrac, window.innerWidth - NAV_CLEARANCE * 2);
+  const stage = document.querySelector('.book-stage');
+  const stageTop = stage ? stage.getBoundingClientRect().top : 0;
+  const footerHeight = bookFooter ? bookFooter.getBoundingClientRect().height : 0;
+  const availableHeight = Math.max(180, window.innerHeight - stageTop - footerHeight);
+  const widthFromVH = availableHeight * ratio;
+  const w = Math.min(widthFromVW, maxPx, widthFromVH);
+  bookFrame.style.width = w + 'px';
+}
+
 // Preload cache: a handful of Image() objects around the current position
 // so tapping next/prev is instant even though nothing is embedded up front.
 const cache = new Map();
@@ -233,6 +259,7 @@ function render(){
     const around = [SPREADS[idx + 1], SPREADS[idx - 1]];
     around.forEach(sp => { if(!sp) return; preloadPage(sp.page); preloadPage(sp.left); preloadPage(sp.right); });
   }
+  fitBookFrame(); // 一定要在上面 class 確定是 single 還是 dual 之後才算寬度
 }
 
 function goToPage(n){
