@@ -196,6 +196,14 @@ function preloadPage(n){
   im.src = srcFor(n);
   cache.set(n, im);
 }
+// spinner 原本只有宣告、從來沒有真的被隱藏過，導致「載入中…」文字永遠疊在
+// 畫面上（半透明、不擋點擊，平常不容易注意到，但空白頁上就特別明顯，很像
+// 卡住沒載入）。用一個計數器追蹤「目前還有幾張圖真的在等待下載」，等全部
+// 载完才隱藏，這樣才會反映真實的載入狀態。
+let pendingLoads = 0;
+function updateSpinner(){
+  spinner.style.display = pendingLoads > 0 ? 'flex' : 'none';
+}
 function loadInto(imgEl, page){
   const slot = imgEl.parentElement;
   if(page == null){
@@ -207,10 +215,17 @@ function loadInto(imgEl, page){
   slot.classList.remove('blank');
   const target = srcFor(page);
   const cached = cache.get(page);
-  const finish = () => { imgEl.src = target; imgEl.classList.add('ready'); };
+  const finish = () => {
+    imgEl.src = target;
+    imgEl.classList.add('ready');
+    pendingLoads = Math.max(0, pendingLoads - 1);
+    updateSpinner();
+  };
   if(cached && cached.complete){ finish(); }
   else {
     imgEl.classList.remove('ready');
+    pendingLoads++;
+    updateSpinner();
     const im = new Image();
     im.onload = finish;
     im.src = target;
