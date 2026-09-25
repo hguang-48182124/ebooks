@@ -173,8 +173,7 @@ function fitBookFrame(){
   const ratio = isDual ? RATIO_DUAL : RATIO_SINGLE;
   const vwFrac = isDual ? 0.98 : 0.98;
   const maxPx = isDual ? 960 : 640;
-  const isWideScreen = window.innerWidth >= 640;
-  const NAV_CLEARANCE = isWideScreen ? 20 : 0;
+  const NAV_CLEARANCE = 20; // 只需留一點點空間，按鈕允許稍微踩進書本邊緣的留白處
   const widthFromVW = Math.min(window.innerWidth * vwFrac, window.innerWidth - NAV_CLEARANCE * 2);
   const stage = document.querySelector('.book-stage');
   const stageTop = stage ? stage.getBoundingClientRect().top : 0;
