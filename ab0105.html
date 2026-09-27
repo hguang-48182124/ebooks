@@ -37,6 +37,11 @@
   .book-frame{ position:relative; display:flex; border-radius: 3px; box-shadow: 0 2px 4px rgba(43,42,37,0.15), 0 18px 40px -12px rgba(34,50,44,0.35), 0 0 0 1px rgba(43,42,37,0.06); background: var(--pine-deep); overflow:hidden; touch-action: pan-y pinch-zoom; -webkit-user-select:none; user-select:none; }
   .book-frame.single{ aspect-ratio: 408.00 / 596.40; }
   .book-frame.dual{ aspect-ratio: 816.00 / 596.40; }
+  /* 少數整頁科判表是橫式圖（寬比高大），套用直式單頁比例會被 object-fit:cover
+     大幅裁切、只看得到中間一小條。這幾頁改用符合原圖實際比例的專屬框架，
+     並改成 contain（完整顯示、上下或左右留白）而不是 cover（裁滿但裁掉內容）。 */
+  .book-frame.single.wide{ aspect-ratio: 1071.00 / 819.00; }
+  .book-frame.wide .page-slot img{ object-fit: contain; background: var(--paper); }
   .page-slot{ position:relative; flex: 1 1 50%; height:100%; overflow:hidden; background: var(--pine-deep); }
   .page-slot.blank{ background: var(--paper); }
   .page-slot img{ width:100%; height:100%; display:block; object-fit: cover; opacity:0; transition: opacity 0.15s ease; }
@@ -103,16 +108,38 @@ function srcFor(n){
 // 如果有封底（HAS_BACKCOVER），最後一頁也單獨一格。中間的內頁兩兩一組
 // 左右配對；如果內頁張數是奇數，最後補一個「虛擬空白頁」讓左右頁永遠對齊
 // （避免後面每一頁的左右配對都因為少一頁而錯位）。
+// FORCE_SINGLE_PAGES：整頁科判表這種「本身就是完整一張圖、不是跟鄰頁合組
+// 成跨頁」的頁面，強制維持單頁滿版顯示，不會被自動配對硬擠成半寬（擠成
+// 半寬會讓兩張互不相干的表格並排、看起來像「接不起來」的破圖）。
+// 對應 0727.jpg~0730.jpg 這四張圖（因為 HAS_COVER 讓檔名比頁碼少 1，
+// 所以網站頁碼是 728~731）。遇到這些頁碼時，會先把前面落單的一頁跟
+// 虛擬空白頁配對、讓它自己單獨顯示，再從下一頁重新開始配對，這樣
+// 這個區段前後的頁碼配對都不會因此錯位。
+const FORCE_SINGLE_PAGES = new Set([728, 729, 730, 731]);
 function buildSpreads(){
   const spreads = [{ type:'single', page: 1 }];
   const interiorEnd = TOTAL - 1; // 最後一頁永遠獨立，不排進配對池
-  const interior = [];
-  for(let p = 2; p <= interiorEnd; p++) interior.push(p);
-  if(interior.length % 2 === 1) interior.push(null); // 虛擬空白頁
-  for(let i = 0; i < interior.length; i += 2){
-    // 傳統中式古籍為「右起、右先左後」的翻頁順序，頁碼較小的頁要放在右邊、
-    // 頁碼較大的放左邊，跟西式書左小右大的直覺相反，所以這裡刻意對調。
-    spreads.push({ type:'pair', left: interior[i+1], right: interior[i] });
+  let pending = null; // 等待配對的頁碼（右邊，較小的那個）
+  for(let p = 2; p <= interiorEnd; p++){
+    if(FORCE_SINGLE_PAGES.has(p)){
+      if(pending !== null){
+        spreads.push({ type:'pair', left: null, right: pending }); // 落單頁配虛擬空白頁
+        pending = null;
+      }
+      spreads.push({ type:'single', page: p });
+      continue;
+    }
+    if(pending === null){
+      pending = p;
+    } else {
+      // 傳統中式古籍為「右起、右先左後」的翻頁順序，頁碼較小的頁要放在右邊、
+      // 頁碼較大的放左邊，跟西式書左小右大的直覺相反，所以這裡刻意對調。
+      spreads.push({ type:'pair', left: p, right: pending });
+      pending = null;
+    }
+  }
+  if(pending !== null){
+    spreads.push({ type:'pair', left: null, right: pending }); // 虛擬空白頁
   }
   spreads.push({ type:'single', page: TOTAL });
   return spreads;
@@ -161,6 +188,7 @@ function parseRatio(str){
 }
 const RATIO_SINGLE = parseRatio('408.00 / 596.40');
 const RATIO_DUAL = parseRatio('816.00 / 596.40');
+const RATIO_WIDE = parseRatio('1071.00 / 819.00');
 
 // 書本寬度不是寫死的 CSS 數字，也不是固定百分比，而是即時實際量「書本區塊
 // 上方實際用了多少高度（標題長短、换幾行都會不一樣），再用剩下的螢幕高度
@@ -170,9 +198,10 @@ const RATIO_DUAL = parseRatio('816.00 / 596.40');
 // 這樣不管哪一本書都會貼齊畫面最底部、不留空白。
 function fitBookFrame(){
   const isDual = bookFrame.classList.contains('dual');
-  const ratio = isDual ? RATIO_DUAL : RATIO_SINGLE;
+  const isWide = bookFrame.classList.contains('wide');
+  const ratio = isWide ? RATIO_WIDE : (isDual ? RATIO_DUAL : RATIO_SINGLE);
   const vwFrac = 0.98;
-  const maxPx = isDual ? 960 : 640;
+  const maxPx = isWide ? 900 : (isDual ? 960 : 640);
   // 手機版翻頁鈕改成貼在 book-frame 內側的透明文字箭頭（被 overflow:hidden
   // 裁掉，不佔額外寬度），不需要再幫它預留淨空；桌機（≥640px）翻頁鈕仍浮在
   // 書本外側，才需要保留淨空避免書本跟按鈕互相重疊。
@@ -237,6 +266,7 @@ function render(){
   progressFill.style.width = ((current - 1) / (TOTAL - 1) * 100) + '%';
   if(mode === 'single'){
     bookFrame.classList.add('single'); bookFrame.classList.remove('dual');
+    bookFrame.classList.toggle('wide', FORCE_SINGLE_PAGES.has(current));
     slotRight.style.display = 'none';
     loadInto(pageImgL, current);
     curPageEl.textContent = current;
@@ -250,11 +280,13 @@ function render(){
       // 封面/封底這種單獨頁，就算在雙頁模式下也維持單頁比例呈現，
       // 不會被硬塞進雙頁框架裡被 object-fit:cover 裁切變形。
       bookFrame.classList.add('single'); bookFrame.classList.remove('dual');
+      bookFrame.classList.toggle('wide', FORCE_SINGLE_PAGES.has(s.page));
       slotRight.style.display = 'none';
       loadInto(pageImgL, s.page);
       curPageEl.textContent = s.page;
     } else {
       bookFrame.classList.add('dual'); bookFrame.classList.remove('single');
+      bookFrame.classList.remove('wide');
       slotRight.style.display = '';
       loadInto(pageImgL, s.left);
       loadInto(pageImgR, s.right);
@@ -283,12 +315,12 @@ function goToPage(n){
 function next(){
   if(mode === 'single'){ if(current < TOTAL) goToPage(current + 1); return; }
   const idx = spreadIndexForPage(current);
-  if(idx < SPREADS.length - 1){ const s = SPREADS[idx + 1]; goToPage(s.type === 'single' ? s.page : s.left); }
+  if(idx < SPREADS.length - 1){ const s = SPREADS[idx + 1]; goToPage(s.type === 'single' ? s.page : (s.left != null ? s.left : s.right)); }
 }
 function prev(){
   if(mode === 'single'){ if(current > 1) goToPage(current - 1); return; }
   const idx = spreadIndexForPage(current);
-  if(idx > 0){ const s = SPREADS[idx - 1]; goToPage(s.type === 'single' ? s.page : s.left); }
+  if(idx > 0){ const s = SPREADS[idx - 1]; goToPage(s.type === 'single' ? s.page : (s.left != null ? s.left : s.right)); }
 }
 
 nextBtn.addEventListener('click', next);
