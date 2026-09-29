@@ -4,8 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>佛說長壽滅罪護諸童子陀羅尼經 · 線上電子書</title>
+<link rel="preload" as="image" href="bg08-images/0001.jpg" fetchpriority="high">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap');
   :root{
     --paper: #EDE7D6; --paper-deep: #E2DAC3; --ink: #2B2A25; --ink-soft: #5C5A4E;
     --pine: #33473F; --pine-deep: #22322C; --brick: #A85338; --gold: #B8925A;
@@ -190,8 +193,19 @@ function fitBookFrame(){
 
 // 預先快取目前位置附近的幾張圖，讓上一頁/下一頁反應更快
 const cache = new Map();
+// 第一張圖（目前頁）載入完成前，先不預載其他頁，避免搶頻寬拖慢封面；
+// 完成後（或最多 4 秒後保底）才一次放行。
+let firstReady = false;
+const deferredPreloads = [];
+function releasePreloads(){
+  if(firstReady) return;
+  firstReady = true;
+  deferredPreloads.splice(0).forEach(preloadPage);
+}
+setTimeout(releasePreloads, 4000);
 function preloadPage(n){
   if(n == null || n < 1 || n > TOTAL || cache.has(n)) return;
+  if(!firstReady){ deferredPreloads.push(n); return; }
   const im = new Image();
   im.src = srcFor(n);
   cache.set(n, im);
@@ -220,6 +234,7 @@ function loadInto(imgEl, page){
     imgEl.classList.add('ready');
     pendingLoads = Math.max(0, pendingLoads - 1);
     updateSpinner();
+    releasePreloads();
   };
   if(cached && cached.complete){ finish(); }
   else {
