@@ -92,14 +92,38 @@ const TOTAL = 392;
 const IMG_DIR = 'ca10-images/';
 const HAS_COVER = false;
 const HAS_BACKCOVER = false;
-// 跨頁圖：一張寬圖同時含左右兩頁（例如宗體篇大綱）。列出「頁碼」（畫面上
-// 顯示的第 N 頁；無封面時頁碼＝檔號，有 0000.jpg 封面時頁碼＝檔號+1）。這些頁會獨佔一整個跨頁、
-// 以整張寬圖呈現，不拆圖也不併圖，所以不會有接縫或錯位。
-const WIDE_PAGES = [13];
+// 跨頁圖：一張寬圖同時含左右兩頁（例如宗體篇大綱）。這裡填「檔號」（NNNN.jpg 的 NNNN）。
+// 它在書裡算 2 頁（右半＋左半）：電腦雙頁模式併成一個跨頁整張顯示，
+// 手機單頁模式則分成「右半、左半」兩頁依序看（同一張圖用位移露出一半，不用切檔）。
+// 跨頁圖必須落在「偶數頁」（偶數頁在右），雙頁模式才會剛好併成一個跨頁。
+// 因為跨頁圖佔 2 頁，TOTAL 要 = 圖檔張數 + 跨頁圖張數（+封面、封底）。
+const WIDE_FILES = [14];
+// 手機單頁模式自動跳過的頁碼（這些空白頁只是為了讓電腦雙頁配對正確才補的）。
+// 填「畫面上的頁碼」，電腦雙頁模式不受影響。不需要就留空 []。
+const SINGLE_SKIP = [13, 16];
+const PAGE_MAP = [null]; // PAGE_MAP[頁碼] = { file:'0014', half:'R'|'L'|null }
+(function buildPageMap(){
+  const inner = TOTAL - WIDE_FILES.length - (HAS_COVER ? 1 : 0) - (HAS_BACKCOVER ? 1 : 0);
+  if(HAS_COVER) PAGE_MAP.push({ file:'0000', half:null });
+  for(let f = 1; f <= inner; f++){
+    const name = String(f).padStart(4, '0');
+    if(WIDE_FILES.includes(f)){ PAGE_MAP.push({ file:name, half:'R' }, { file:name, half:'L' }); }
+    else PAGE_MAP.push({ file:name, half:null });
+  }
+  if(HAS_BACKCOVER) PAGE_MAP.push({ file:'9999', half:null });
+})();
+function halfOf(page){ return (page != null && PAGE_MAP[page]) ? PAGE_MAP[page].half : null; }
+function applyHalf(imgEl, page){
+  const h = halfOf(page);
+  imgEl.classList.toggle('wide-crop', !!h);
+  imgEl.classList.toggle('half-R', h === 'R');
+  imgEl.classList.toggle('half-L', h === 'L');
+}
 // 封面固定檔名 0000.jpg、封底固定檔名 9999.jpg，內頁維持原本 0001.jpg 起算，
 // 這樣加補封面/封底時完全不用重新命名內頁。沒有封面/封底時（HAS_COVER 和
 // HAS_BACKCOVER 都是 false）跟原本 ac04 的行為完全一樣。
 function srcFor(n){
+  if(PAGE_MAP[n]) return IMG_DIR + PAGE_MAP[n].file + '.jpg';
   if(HAS_COVER && n === 1) return IMG_DIR + '0000.jpg';
   if(HAS_BACKCOVER && n === TOTAL) return IMG_DIR + '9999.jpg';
   const contentIndex = HAS_COVER ? n - 1 : n;
@@ -114,23 +138,18 @@ function srcFor(n){
 function buildSpreads(){
   const spreads = [{ type:'single', page: 1 }];
   const interiorEnd = TOTAL - 1; // 最後一頁永遠獨立，不排進配對池
-  // 跨頁圖把內頁切成幾段：每段各自兩兩配對（奇數張就補虛擬空白頁），
-  // 跨頁圖本身獨佔一個 'wide' 跨頁，配對從跨頁圖之後重新開始。
-  const runs = [[]];
-  for(let p = 2; p <= interiorEnd; p++){
-    if(WIDE_PAGES.includes(p)){ runs.push({ wide: p }); runs.push([]); }
-    else runs[runs.length - 1].push(p);
+  const interior = [];
+  for(let p = 2; p <= interiorEnd; p++) interior.push(p);
+  if(interior.length % 2 === 1) interior.push(null); // 虛擬空白頁
+  for(let i = 0; i < interior.length; i += 2){
+    // 傳統中式古籍為「右起、右先左後」的翻頁順序，頁碼較小的頁要放在右邊、
+    // 頁碼較大的放左邊，跟西式書左小右大的直覺相反，所以這裡刻意對調。
+    const right = interior[i], left = interior[i+1];
+    const isWide = left != null && halfOf(right) === 'R' && halfOf(left) === 'L' &&
+                   PAGE_MAP[right].file === PAGE_MAP[left].file;
+    if(halfOf(right) === 'R' && !isWide) console.warn('跨頁圖 ' + PAGE_MAP[right].file + ' 沒有落在偶數頁，無法併成跨頁，請調整空白頁');
+    spreads.push({ type: isWide ? 'wide' : 'pair', left, right, page: right });
   }
-  runs.forEach(run => {
-    if(run.wide){ spreads.push({ type:'wide', page: run.wide }); return; }
-    const interior = run.slice();
-    if(interior.length % 2 === 1) interior.push(null); // 虛擬空白頁
-    for(let i = 0; i < interior.length; i += 2){
-      // 傳統中式古籍為「右起、右先左後」的翻頁順序，頁碼較小的頁要放在右邊、
-      // 頁碼較大的放左邊，跟西式書左小右大的直覺相反，所以這裡刻意對調。
-      spreads.push({ type:'pair', left: interior[i+1], right: interior[i] });
-    }
-  });
   spreads.push({ type:'single', page: TOTAL });
   return spreads;
 }
@@ -138,8 +157,8 @@ const SPREADS = buildSpreads();
 function spreadIndexForPage(page){
   for(let i = 0; i < SPREADS.length; i++){
     const s = SPREADS[i];
-    if((s.type === 'single' || s.type === 'wide') && s.page === page) return i;
-    if(s.type === 'pair' && (s.left === page || s.right === page)) return i;
+    if(s.type === 'single' && s.page === page) return i;
+    if((s.type === 'pair' || s.type === 'wide') && (s.left === page || s.right === page)) return i;
   }
   return 0;
 }
@@ -253,38 +272,36 @@ function loadInto(imgEl, page){
 function render(){
   progressFill.style.width = ((current - 1) / (TOTAL - 1) * 100) + '%';
   if(mode === 'single'){
-    // 手機單頁模式：跨頁圖拆成「右半、左半」兩個單頁依序閱讀（右起，先右後左），
-    // 電腦雙頁模式則維持整張跨頁並排。
-    const isWide = WIDE_PAGES.includes(current);
     bookFrame.classList.add('single'); bookFrame.classList.remove('dual');
     slotRight.style.display = 'none';
-    pageImgL.classList.toggle('wide-crop', isWide);
-    pageImgL.classList.toggle('half-R', isWide && wideHalf === 'R');
-    pageImgL.classList.toggle('half-L', isWide && wideHalf === 'L');
+    applyHalf(pageImgL, current); // 手機：跨頁圖的右半、左半各算一頁
     loadInto(pageImgL, current);
-    curPageEl.textContent = isWide ? current + (wideHalf === 'R' ? '（右半）' : '（左半）') : current;
+    curPageEl.textContent = current;
     prevBtn.disabled = current <= 1;
     nextBtn.disabled = current >= TOTAL;
     preloadPage(current + 1); preloadPage(current + 2); preloadPage(current - 1);
   } else {
-    pageImgL.classList.remove('wide-crop', 'half-R', 'half-L');
     const idx = spreadIndexForPage(current);
     const s = SPREADS[idx];
     if(s.type === 'wide'){
+      // 電腦：整張跨頁圖佔滿整個雙頁框架
       bookFrame.classList.add('dual'); bookFrame.classList.remove('single');
       slotRight.style.display = 'none';
-      loadInto(pageImgL, s.page);
-      curPageEl.textContent = s.page;
+      applyHalf(pageImgL, null);
+      loadInto(pageImgL, s.right);
+      curPageEl.textContent = Math.min(s.left, s.right) + '–' + Math.max(s.left, s.right);
     } else if(s.type === 'single'){
       // 封面/封底這種單獨頁，就算在雙頁模式下也維持單頁比例呈現，
       // 不會被硬塞進雙頁框架裡被 object-fit:cover 裁切變形。
       bookFrame.classList.add('single'); bookFrame.classList.remove('dual');
       slotRight.style.display = 'none';
+      applyHalf(pageImgL, null);
       loadInto(pageImgL, s.page);
       curPageEl.textContent = s.page;
     } else {
       bookFrame.classList.add('dual'); bookFrame.classList.remove('single');
       slotRight.style.display = '';
+      applyHalf(pageImgL, s.left); applyHalf(pageImgR, s.right);
       loadInto(pageImgL, s.left);
       loadInto(pageImgR, s.right);
       // 注意：left/right 是「畫面上擺哪邊」的視覺位置（右起、右先左後，
@@ -300,26 +317,25 @@ function render(){
     prevBtn.disabled = idx <= 0;
     nextBtn.disabled = idx >= SPREADS.length - 1;
     const around = [SPREADS[idx + 1], SPREADS[idx - 1]];
-    around.forEach(sp => { if(!sp) return; preloadPage(sp.page); preloadPage(sp.left); preloadPage(sp.right); });
+    around.forEach(sp => { if(!sp) return; if(sp.type === 'single'){ preloadPage(sp.page); } else { preloadPage(sp.right); if(sp.type === 'pair') preloadPage(sp.left); } });
   }
   fitBookFrame(); // 一定要在上面 class 確定是 single 還是 dual 之後才算寬度
 }
 
-let wideHalf = 'R'; // 手機單頁模式下，跨頁圖目前看的是哪一半：'R' 右半（先）、'L' 左半（後）
-function goToPage(n, half){
+function goToPage(n){
   current = Math.min(Math.max(n, 1), TOTAL);
-  wideHalf = half || 'R';
   render();
 }
 // 一個跨頁「落腳」的頁碼：單頁／跨頁圖用它自己；左右配對用左頁，左頁是虛擬空白頁就用右頁
 function firstPageOf(s){
-  if(s.type === 'pair') return s.left != null ? s.left : s.right;
+  if(s.type === 'pair' || s.type === 'wide') return s.left != null ? s.left : s.right;
   return s.page;
 }
 function next(){
   if(mode === 'single'){
-    if(WIDE_PAGES.includes(current) && wideHalf === 'R'){ wideHalf = 'L'; render(); return; }
-    if(current < TOTAL) goToPage(current + 1, 'R');
+    let n = current + 1;
+    while(n <= TOTAL && SINGLE_SKIP.includes(n)) n++;
+    if(n <= TOTAL) goToPage(n);
     return;
   }
   const idx = spreadIndexForPage(current);
@@ -327,8 +343,9 @@ function next(){
 }
 function prev(){
   if(mode === 'single'){
-    if(WIDE_PAGES.includes(current) && wideHalf === 'L'){ wideHalf = 'R'; render(); return; }
-    if(current > 1) goToPage(current - 1, 'L'); // 往回翻到跨頁圖時，先看到它的左半（最後一頁）
+    let n = current - 1;
+    while(n >= 1 && SINGLE_SKIP.includes(n)) n--;
+    if(n >= 1) goToPage(n);
     return;
   }
   const idx = spreadIndexForPage(current);
