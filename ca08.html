@@ -168,6 +168,19 @@ const RATIO_DUAL = parseRatio('839.06 / 589.61');
 // 螢幕多高，書本底下的頁碼／進度條永遠會留在看得到的範圍內。
 // 頁碼列＋進度條的高度不再用猜的常數，改成即時量測 DOM 實際高度，
 // 這樣不管哪一本書都會貼齊畫面最底部、不留空白。
+// 桌機瀏覽器縮放（Ctrl+/-、瀏覽器選單的「縮放」）偵測：
+// outerWidth/outerHeight 是「視窗本身」的大小，不會隨縮放變；innerWidth/innerHeight
+// 是「網頁可視區」的 CSS px，縮放越大數字越小。所以 outer/inner 的比值大約等於縮放倍率。
+// 寬、高兩個比值取較小的那個，避免 DevTools 停靠在視窗側邊/底部（只有單邊 inner
+// 變小）被誤判成縮放。手機沒有這種縮放（outer 跟 inner 幾乎相等），比值≈1，不受影響。
+function browserZoom(){
+  const ow = window.outerWidth, oh = window.outerHeight;
+  const iw = window.innerWidth, ih = window.innerHeight;
+  if(!ow || !oh || !iw || !ih) return 1;
+  const z = Math.min(ow / iw, oh / ih);
+  return z >= 1.2 ? z : 1;
+}
+
 function fitBookFrame(){
   const isDual = bookFrame.classList.contains('dual');
   const ratio = isDual ? RATIO_DUAL : RATIO_SINGLE;
@@ -182,7 +195,12 @@ function fitBookFrame(){
   const stage = document.querySelector('.book-stage');
   const stageTop = stage ? stage.getBoundingClientRect().top : 0;
   const footerHeight = bookFooter ? bookFooter.getBoundingClientRect().height : 0;
-  const availableHeight = Math.max(180, window.innerHeight - stageTop - footerHeight);
+  // 瀏覽器縮放時 innerHeight 會等比縮小，但頁首/頁尾多為固定 px 字級不會跟著縮小，
+  // 直接拿縮小後的 innerHeight 去扣會讓書本被壓得比縮放比例更小。先換算回縮放前
+  // （100%）的高度再扣，縮放時書本就會跟標題一樣等比變大（放不下的部分頁面可捲動）。
+  // 沒縮放時 zoom=1，行為跟原本完全一致。
+  const zoom = browserZoom();
+  const availableHeight = Math.max(180, window.innerHeight * zoom - stageTop - footerHeight);
   const widthFromVH = availableHeight * ratio;
   const w = Math.min(widthFromVW, maxPx, widthFromVH);
   bookFrame.style.width = w + 'px';

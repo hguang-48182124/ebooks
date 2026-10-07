@@ -14,16 +14,16 @@
   *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ height:100%; background: var(--paper); font-family: 'Noto Sans TC', sans-serif; color: var(--ink); overflow-x:hidden; }
   body{ background-image: radial-gradient(circle at 15% 10%, rgba(184,146,90,0.10), transparent 40%), radial-gradient(circle at 85% 90%, rgba(51,71,63,0.08), transparent 45%); }
-  .wrap{ max-width: 960px; margin: 0 auto; padding: 20px 16px env(safe-area-inset-bottom, 0px); min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; }
-  header{ display:flex; align-items:baseline; justify-content:space-between; padding-bottom:14px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+  .wrap{ max-width: 960px; margin: 0 auto; padding: 14px 4px env(safe-area-inset-bottom, 0px); min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; }
+  header{ display:flex; align-items:baseline; justify-content:space-between; padding:0 8px 10px; border-bottom: 1px solid var(--line); margin-bottom: 10px; }
   .brand{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: 18px; letter-spacing: 0.04em; color: var(--pine-deep); }
   .brand span{ display:block; font-family:'Noto Sans TC',sans-serif; font-weight:300; font-size:10px; letter-spacing:0.2em; color: var(--ink-soft); margin-top:3px; }
-  .title-block{ text-align:center; margin-bottom: 14px; }
+  .title-block{ text-align:center; margin-bottom: 8px; padding: 0 8px; }
   h1{ font-family:'Noto Serif TC', serif; font-weight:700; font-size: clamp(17px, 4.2vw, 26px); color: var(--pine-deep); line-height:1.25; overflow-wrap: anywhere; word-break: break-word; }
-  .subtitle{ margin-top:6px; font-size:12px; color: var(--ink-soft); letter-spacing:0.03em; }
+  .subtitle{ margin-top:3px; font-size:11px; color: var(--ink-soft); letter-spacing:0.03em; }
 
   /* ---- fast page navigation bar (replaces volume-nav; jump straight to a page) ---- */
-  .jump-bar{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .jump-bar{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
   .jump-bar input{ width:52px; text-align:center; font-size:12px; padding:5px 4px; border-radius:6px; border:1px solid var(--line); background:#fff; }
   .jump-bar button{ font-size:11px; padding:5px 10px; border-radius:6px; border:1px solid var(--pine); background:transparent; color:var(--pine); cursor:pointer; }
   .jump-bar button:hover{ background: rgba(51,71,63,0.08); }
@@ -49,7 +49,7 @@
   .nav-prev{ left:2px; } .nav-next{ right:2px; }
   @media (min-width: 640px){ .nav-btn{ width:42px; height:42px; border-radius:50%; background: rgba(255,255,255,0.85); color: var(--pine-deep); font-size:18px; font-weight:400; } .nav-prev{ left: -54px; } .nav-next{ right: -54px; } }
   .book-footer{ margin-top:0; }
-  .page-indicator{ text-align:center; font-size:10px; color: var(--ink-soft); letter-spacing:0.1em; margin-top:14px; margin-bottom:6px; }
+  .page-indicator{ text-align:center; font-size:10px; color: var(--ink-soft); letter-spacing:0.1em; margin-top:10px; margin-bottom:6px; }
   .page-indicator b{ color: var(--pine-deep); }
   .progress-track{ width: min(84vw, 420px); height:2px; background: var(--line); margin: 0 auto; border-radius:2px; overflow:hidden; }
   .progress-fill{ height:100%; background: var(--brick); transition: width 0.15s ease; }
@@ -168,6 +168,19 @@ const RATIO_DUAL = parseRatio('816.00 / 596.40');
 // 螢幕多高，書本底下的頁碼／進度條永遠會留在看得到的範圍內。
 // 頁碼列＋進度條的高度不再用猜的常數，改成即時量測 DOM 實際高度，
 // 這樣不管哪一本書都會貼齊畫面最底部、不留空白。
+// 桌機瀏覽器縮放（Ctrl+/-、瀏覽器選單的「縮放」）偵測：
+// outerWidth/outerHeight 是「視窗本身」的大小，不會隨縮放變；innerWidth/innerHeight
+// 是「網頁可視區」的 CSS px，縮放越大數字越小。所以 outer/inner 的比值大約等於縮放倍率。
+// 寬、高兩個比值取較小的那個，避免 DevTools 停靠在視窗側邊/底部（只有單邊 inner
+// 變小）被誤判成縮放。手機沒有這種縮放（outer 跟 inner 幾乎相等），比值≈1，不受影響。
+function browserZoom(){
+  const ow = window.outerWidth, oh = window.outerHeight;
+  const iw = window.innerWidth, ih = window.innerHeight;
+  if(!ow || !oh || !iw || !ih) return 1;
+  const z = Math.min(ow / iw, oh / ih);
+  return z >= 1.2 ? z : 1;
+}
+
 function fitBookFrame(){
   const isDual = bookFrame.classList.contains('dual');
   const ratio = isDual ? RATIO_DUAL : RATIO_SINGLE;
@@ -182,7 +195,12 @@ function fitBookFrame(){
   const stage = document.querySelector('.book-stage');
   const stageTop = stage ? stage.getBoundingClientRect().top : 0;
   const footerHeight = bookFooter ? bookFooter.getBoundingClientRect().height : 0;
-  const availableHeight = Math.max(180, window.innerHeight - stageTop - footerHeight);
+  // 瀏覽器縮放時 innerHeight 會等比縮小，但頁首/頁尾多為固定 px 字級不會跟著縮小，
+  // 直接拿縮小後的 innerHeight 去扣會讓書本被壓得比縮放比例更小。先換算回縮放前
+  // （100%）的高度再扣，縮放時書本就會跟標題一樣等比變大（放不下的部分頁面可捲動）。
+  // 沒縮放時 zoom=1，行為跟原本完全一致。
+  const zoom = browserZoom();
+  const availableHeight = Math.max(180, window.innerHeight * zoom - stageTop - footerHeight);
   const widthFromVH = availableHeight * ratio;
   const w = Math.min(widthFromVW, maxPx, widthFromVH);
   bookFrame.style.width = w + 'px';
