@@ -213,8 +213,8 @@ function browserZoom(){
   const ow = window.outerWidth, oh = window.outerHeight;
   const iw = window.innerWidth, ih = window.innerHeight;
   if(!ow || !oh || !iw || !ih) return 1;
-  const z = Math.min(ow / iw, oh / ih);
-  return z >= 1.05 ? z : 1;
+  const z = Math.min(ow / iw, oh / ih, window.devicePixelRatio || 1); // 縮放倍率不可能大於 devicePixelRatio（顯示器縮放 ≥ 100%），可擋掉側邊欄造成的誤判
+  return z >= 1.08 ? z : 1;
 }
 
 function fitBookFrame(){
